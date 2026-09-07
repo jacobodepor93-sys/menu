@@ -400,9 +400,12 @@ function deshacer(){
   cerrarHoja(); pintar(); aviso('Deshecho.');
 }
 let GUARDANDO=null;
-/* === Sincronización con Google (rellenad estas dos líneas) === */
-const API = 'https://script.google.com/macros/s/AKfycbwpEbGg9S1SU70yViRDjuKsibQo8I4dOWYHhhvhmkEwQcfVT7mx0k2r3wb95vwOmJA/exec';
-const TOKEN = 'menu-alba-jaco-bueno';
+/* === Sincronización con Google ===
+   La dirección y la clave NO van en este archivo: se piden al instalar la app
+   y se guardan solo en el móvil. Así el código puede ser público sin riesgo. */
+function API(){ return (LOCAL && LOCAL.api) || ''; }
+function TOKEN(){ return (LOCAL && LOCAL.token) || ''; }
+function haySync(){ return API().indexOf('http')===0 && TOKEN().length>0; }
 
 let REV = 0, SUBIENDO = false, PENDIENTE = false, ULTIMO_ERROR = 0;
 
@@ -434,8 +437,8 @@ function marcarEstado(txt){
   if(e) e.textContent=txt||'';
 }
 function bajar(silencioso){
-  if(!API || API.indexOf('http')!==0) return;
-  fetch(API+'?token='+encodeURIComponent(TOKEN)+'&t='+Date.now())
+  if(!haySync()) return;
+  fetch(API()+'?token='+encodeURIComponent(TOKEN())+'&t='+Date.now())
     .then(function(r){return r.json();})
     .then(function(j){
       if(!j.ok) { marcarEstado('Revisad la clave'); return; }
@@ -450,11 +453,11 @@ function bajar(silencioso){
     .catch(function(){ marcarEstado('Sin conexión'); });
 }
 function subir(){
-  if(!API || API.indexOf('http')!==0) return;
+  if(!haySync()) return;
   if(SUBIENDO){ PENDIENTE=true; return; }
   SUBIENDO=true;
-  fetch(API,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},
-    body:JSON.stringify({token:TOKEN,rev:REV,datos:DATOS})})
+  fetch(API(),{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},
+    body:JSON.stringify({token:TOKEN(),rev:REV,datos:DATOS})})
     .then(function(r){return r.json();})
     .then(function(j){
       SUBIENDO=false;
@@ -593,6 +596,30 @@ function guardarLocal(){
   try{ localStorage.setItem('menu-local', JSON.stringify(LOCAL)); }catch(e){}
 }
 function yo(){ return LOCAL.quien || ''; }
+function hojaConexion(primera){
+  abrirHoja('<h2>'+(primera?'Conectar la app':'Conexión con Google')+'</h2>'+
+    '<p class="sub">Pega aquí lo que sacaste de Google. Se guarda solo en este móvil.</p>'+
+    '<p class="etiqueta">Dirección de la aplicación web</p>'+
+    '<input class="campo" id="cx-api" placeholder="https://script.google.com/…/exec" value="'+esc(API())+'" autocapitalize="off" autocorrect="off" spellcheck="false">'+
+    '<p class="etiqueta">Clave</p>'+
+    '<input class="campo" id="cx-token" placeholder="la misma del Codigo.gs" value="'+esc(TOKEN())+'" autocapitalize="off" autocorrect="off" spellcheck="false">'+
+    '<div class="pie-hoja"><button class="btn btn-1" onclick="guardarConexion('+(primera?'true':'false')+')">Guardar</button>'+
+    (primera?'<button class="btn btn-plano" onclick="saltarConexion()">Ahora no, solo en este móvil</button>'
+            :'<button class="btn btn-plano" onclick="hojaAjustes()">Volver</button>')+'</div>');
+}
+function guardarConexion(primera){
+  const a=document.getElementById('cx-api').value.trim();
+  const t=document.getElementById('cx-token').value.trim();
+  if(a && a.indexOf('/exec')===-1){ aviso('La dirección tiene que acabar en /exec.'); return; }
+  LOCAL.api=a; LOCAL.token=t; guardarLocal();
+  cerrarHoja();
+  if(haySync()){ aviso('Conectando…'); bajar(); subir(); }
+  if(primera && !LOCAL.quien) hojaQuien(true);
+}
+function saltarConexion(){
+  cerrarHoja();
+  if(!LOCAL.quien) hojaQuien(true);
+}
 function hojaQuien(primera){
   let h='<h2>'+(primera?'¿Quién usa este móvil?':'Este móvil es de')+'</h2>'+
         '<p class="sub">Sirve para saber de quién son los ajustes de aspecto y para no preguntaros lo del otro. Se guarda solo aquí, no se comparte.</p>';
@@ -1775,7 +1802,8 @@ function hojaAjustes(){
 
   h+='<p class="etiqueta">Este móvil</p>'+
     filaAjuste('hojaQuien()','Quién lo usa', yo()? yo()+'. Cámbialo si os intercambiáis el teléfono.' : 'Sin elegir todavía.',true)+
-    filaAjuste('hojaTema()','Color de la app','Seis paletas suaves. Alba puede tener otra distinta.',true);
+    filaAjuste('hojaTema()','Color de la app','Seis paletas suaves. Alba puede tener otra distinta.',true)+
+    filaAjuste('hojaConexion()','Conexión con Google', haySync()?'Conectada. Toca para cambiar la dirección o la clave.':'Sin conectar: los datos solo están en este móvil.',true);
 
   h+='<p class="etiqueta">Todo</p>'+
     filaAjuste('restaurarTodo()','Restaurar los ajustes','Vuelve a los grupos, dificultades y objetivos de partida. No toca recetas ni menús.')+
@@ -2328,7 +2356,8 @@ cargarGuardado();
 comprobarSemana();
 pintar();
 bajar(true);
-if(!LOCAL.quien) hojaQuien(true);
+if(!haySync()) hojaConexion(true);
+else if(!LOCAL.quien) hojaQuien(true);
 setInterval(function(){ if(!document.hidden) bajar(); }, 20000);
 document.addEventListener('visibilitychange', function(){ if(!document.hidden) bajar(); else actualizarGlobo(); });
 window.addEventListener('online', function(){ bajar(); subir(); });
