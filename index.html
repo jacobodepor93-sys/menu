@@ -27,7 +27,7 @@
   @media (prefers-color-scheme: dark) {
     :root {
       --fondo:#241E22; --tarjeta:#312A30; --tinta:#F4EAEE; --gris:#AC9CA4; --borde:#443A41;
-      --sombra:rgba(0,0,0,.28);
+      --suave:#3B3339; --sombra:rgba(0,0,0,.35);
     }
   }
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -194,6 +194,9 @@
   .hoja { width: 100%; max-width: 640px; margin: 0 auto; max-height: 92vh; max-height: 92dvh; overscroll-behavior: contain; overflow-y: auto; background: var(--fondo); border-radius: 28px 28px 0 0; padding: 10px 20px calc(24px + env(safe-area-inset-bottom)); animation: subir .24s cubic-bezier(.2,.8,.3,1); }
   @keyframes subir { from { transform: translateY(24px); opacity: .5; } }
   @media (prefers-reduced-motion: reduce) { .hoja { animation: none; } }
+  .pie-hoja { position: sticky; bottom: 0; z-index: 2; background: var(--fondo); margin: 8px -20px 0; padding: 10px 20px calc(6px + env(safe-area-inset-bottom)); box-shadow: 0 -12px 16px -12px var(--sombra); }
+  .pie-hoja .btn { margin-bottom: 8px; }
+  .pie-hoja .btn:last-child { margin-bottom: 0; }
   .asa { width: 40px; height: 4px; border-radius: 2px; background: var(--borde); margin: 6px auto 14px; }
   .hoja h2 { font-family: 'Caveat', cursive; font-weight: 700; font-size: 26px; margin: 0 0 8px; }
   .texto-receta { -webkit-user-select: text; user-select: text; background: var(--tarjeta); border-radius: 18px; padding: 16px; font-size: 15px; white-space: pre-wrap; max-height: 30vh; overflow-y: auto; margin-bottom: 14px; }
@@ -398,8 +401,8 @@ function deshacer(){
 }
 let GUARDANDO=null;
 /* === Sincronización con Google (rellenad estas dos líneas) === */
-const API = 'https://script.google.com/macros/s/AKfycbwpEbGg9S1SU70yViRDjuKsibQo8I4dOWYHhhvhmkEwQcfVT7mx0k2r3wb95vwOmJA/exec';
-const TOKEN = 'menu-alba-jaco-bueno';
+const API = 'PEGA_AQUI_LA_URL_QUE_TERMINA_EN_exec';
+const TOKEN = 'PEGA_AQUI_LA_MISMA_CLAVE_DEL_SCRIPT';
 
 let REV = 0, SUBIENDO = false, PENDIENTE = false, ULTIMO_ERROR = 0;
 
@@ -556,7 +559,13 @@ const TEMAS = [
   { id:'rosa',      n:'Rosa',      c:'#FBD3DA', t:'#8C3F51', s:'#F3B7C2', o:'#F8C3CD', ot:'#6D2F3E' }
 ];
 function tema(){ return TEMAS.filter(function(t){return t.id===LOCAL.tema;})[0] || TEMAS[0]; }
+let ESCUCHA_TEMA=false;
 function aplicarTema(){
+  if(!ESCUCHA_TEMA && window.matchMedia){
+    const mq=window.matchMedia('(prefers-color-scheme: dark)');
+    if(mq.addEventListener) mq.addEventListener('change', function(){ aplicarTema(); pintar(); });
+    ESCUCHA_TEMA=true;
+  }
   const t=tema(), r=document.documentElement;
   if(!r||!r.style) return;
   const oscuro = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -2273,9 +2282,10 @@ function hojaReceta(id,destino){
     '<input class="campo" id="rec-url" placeholder="Enlace, opcional" value="'+(r&&r.url?esc(r.url):'')+'">'+
     '<textarea class="campo" id="rec-ing" placeholder="Ingredientes separados por comas, opcional">'+(r?esc(r.ingredientes.join(', ')):'')+'</textarea>'+
     '<textarea class="campo" id="rec-texto" placeholder="Receta entera, opcional">'+(r&&r.texto?esc(r.texto):'')+'</textarea>'+
-    '<button class="btn btn-1" onclick="guardarRecetaUI(\''+(id||'')+'\','+(destino?JSON.stringify(destino).replace(/"/g,'&quot;'):'null')+')">Guardar</button>'+
     (r?'<button class="btn btn-peligro" onclick="cerrarHoja();borrarReceta(\''+r.id+'\')">Borrar receta</button>':'')+
-    '<button class="btn btn-plano" onclick="cerrarHoja()">Cancelar</button>'
+    '<div class="pie-hoja">'+
+    '<button class="btn btn-1" onclick="guardarRecetaUI(\''+(id||'')+'\','+(destino?JSON.stringify(destino).replace(/"/g,'&quot;'):'null')+')">Guardar</button>'+
+    '<button class="btn btn-plano" onclick="cerrarHoja()">Cancelar</button></div>'
   );
   setTimeout(function(){const n=document.getElementById('rec-nombre'); if(n&&!r) n.focus();},60);
 }
