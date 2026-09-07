@@ -1,0 +1,2328 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Nuestro menú</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icono-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#FDFAF6">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --fondo:#FDFAF6; --tarjeta:#FFFFFF; --tinta:#453D42; --gris:#7C7278; --borde:#F1EAE4; --suave:#F5EFE9;
+    --sombra:rgba(74,65,71,.05);
+    --durazno:#FFDCC6; --durazno-t:#7A4B31; --durazno-s:#F7C4A4;
+    --menta:#D3EDE2; --menta-t:#3B6B58; --menta-s:#AEDCC8;
+    --lavanda:#E6E0F8; --lavanda-t:#564688; --lavanda-s:#CFC4EE;
+    --limon:#FFEFC9; --limon-t:#7A6128; --limon-s:#F6DFA0;
+    --coral:#FCD5D1; --coral-t:#96473F; --coral-s:#F5BAB3;
+    --cielo:#D8ECF4; --cielo-t:#376376; --cielo-s:#B5DAE8;
+    --arena:#F2E8D9; --arena-t:#75603E; --arena-s:#E3D2B8;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --fondo:#241E22; --tarjeta:#312A30; --tinta:#F4EAEE; --gris:#AC9CA4; --borde:#443A41;
+      --sombra:rgba(0,0,0,.28);
+    }
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--fondo); color: var(--tinta);
+    font-family: 'Nunito', system-ui, sans-serif; font-size: 17px; line-height: 1.5;
+    padding-bottom: calc(92px + env(safe-area-inset-bottom));
+    -webkit-user-select: none; user-select: none;
+  }
+  input, textarea { -webkit-user-select: text; user-select: text; }
+  button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; min-height: 44px; }
+  input, textarea { font: inherit; color: inherit; }
+  :focus-visible { outline: 3px solid var(--lavanda-s); outline-offset: 2px; }
+
+  header { max-width: 640px; margin: 0 auto; padding: calc(20px + env(safe-area-inset-top)) 20px 6px; display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+  header h1 { font-family: 'Caveat', cursive; font-weight: 700; font-size: 30px; margin: 0; line-height: 1; }
+  header .fecha { font-size: 13px; color: var(--gris); font-weight: 600; margin-top: 4px; }
+  .ico { flex: none; width: 44px; height: 44px; border-radius: 14px; background: var(--tarjeta); box-shadow: 0 2px 8px var(--sombra); font-size: 12px; font-weight: 800; color: var(--gris); }
+
+  main { max-width: 640px; margin: 0 auto; padding: 8px 20px 0; }
+  .oculto { display: none !important; }
+
+  .tarjeta { background: var(--tarjeta); border-radius: 24px; padding: 18px; margin-bottom: 14px; box-shadow: 0 2px 10px var(--sombra); }
+  .tarjeta h2 { font-size: 15px; font-weight: 800; margin: 0 0 4px; letter-spacing: .01em; }
+  .tarjeta .desc { font-size: 12.5px; color: var(--gris); margin: 0 0 14px; line-height: 1.5; }
+  .cinta { display: inline-block; background: var(--durazno); color: var(--durazno-t); font-family: 'Caveat', cursive; font-weight: 700; font-size: 23px; line-height: 1; padding: 8px 18px 7px; border-radius: 8px; transform: rotate(-1.2deg); margin-bottom: 14px; }
+  .dia.hoy .cinta { background: var(--menta); color: var(--menta-t); }
+
+  .hueco { display: flex; align-items: center; gap: 10px; width: 100%; text-align: left; padding: 10px 0; }
+  .hueco + .hueco { border-top: 1px solid var(--borde); }
+  .pastilla { flex: none; width: 74px; text-align: left; font-size: 11px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--gris); }
+  .p-desayuno, .p-comida, .p-cena { color: var(--gris); }
+  .hueco.destino .pastilla { color: var(--durazno-t); }
+  .nombre-plato { flex: 1; font-size: 16.5px; font-weight: 700; line-height: 1.3; }
+  .nombre-plato.vacio { font-weight: 600; color: var(--gris); }
+  .mini { flex: none; font-size: 10px; font-weight: 800; border-radius: 6px; padding: 3px 7px; background: var(--limon); color: var(--limon-t); }
+  .mini.gris { background: var(--borde); color: var(--gris); }
+  .mini.verde { background: var(--menta); color: var(--menta-t); }
+  .avatar { flex: none; width: 28px; height: 28px; border-radius: 50%; font-size: 12px; font-weight: 800; line-height: 28px; text-align: center; background: var(--lavanda); color: var(--lavanda-t); }
+  .avatar.b { background: var(--coral); color: var(--coral-t); }
+  .flecha { color: var(--gris); font-size: 16px; font-weight: 700; }
+
+  .chip.mas { background: transparent; box-shadow: inset 0 0 0 2px var(--borde); color: var(--gris); }
+  nav button { position: relative; }
+  nav button.con-punto::after { content: ''; position: absolute; top: 6px; right: 50%; margin-right: -16px; width: 8px; height: 8px; border-radius: 50%; background: var(--durazno-s); }
+  .vacio-hoy .nombre-plato { font-weight: 600; }
+  .fila-aj { display: flex; align-items: center; gap: 10px; width: 100%; text-align: left; background: var(--tarjeta); border-radius: 18px; padding: 14px 16px; margin-bottom: 8px; box-shadow: 0 2px 8px var(--sombra); }
+  .fila-aj > span:first-child { flex: 1; }
+  .solo-aqui { font-style: normal; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; color: var(--gris); background: var(--suave); padding: 2px 6px; border-radius: 6px; margin-left: 4px; }
+  .fila-aj b { display: block; font-size: 15px; font-weight: 800; margin-bottom: 2px; }
+  .fila-aj span span { font-size: 12.5px; color: var(--gris); line-height: 1.45; font-weight: 600; }
+  .cab-lista { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+  .sitio { font-family: 'Nunito', sans-serif; font-size: 15px; font-weight: 800; margin: 0; letter-spacing: 0; }
+  .cuenta { background: var(--borde); color: var(--gris); font-size: 12px; font-weight: 800; padding: 2px 9px; border-radius: 20px; }
+  .casilla-c { flex: none; width: 26px; height: 26px; min-height: 26px; border-radius: 50%; box-shadow: inset 0 0 0 2px var(--borde); }
+  .casilla-c:active { background: var(--menta); }
+  .extra-plato { display: flex; align-items: baseline; gap: 8px; padding: 0 0 10px 74px; font-size: 14px; }
+  .extra-plato span { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; color: var(--gris); }
+  .extra-plato b { font-weight: 700; }
+  .fila-sensacion { display: flex; align-items: center; gap: 6px; padding: 0 0 10px 74px; }
+  .fila-sensacion .quien { font-size: 12px; font-weight: 700; color: var(--gris); flex: 1; }
+  .mini-sens { min-height: 44px; padding: 6px 12px; border-radius: 12px; font-size: 13px; font-weight: 700; color: var(--gris); box-shadow: inset 0 0 0 2px var(--borde); }
+  .mini-sens.sel-bien { background: var(--menta); color: var(--menta-t); box-shadow: none; }
+  .mini-sens.sel-regular { background: var(--limon); color: var(--limon-t); box-shadow: none; }
+  .mini-sens.sel-mal { background: var(--coral); color: var(--coral-t); box-shadow: none; }
+  .btn { display: block; width: 100%; padding: 16px; text-align: center; border-radius: 18px; font-weight: 800; font-size: 16px; margin-bottom: 12px; }
+  .btn-1 { background: var(--durazno); color: var(--durazno-t); box-shadow: 0 3px 0 var(--durazno-s); }
+  .btn-2, .btn-3, .btn-4 { background: var(--suave); color: var(--tinta); box-shadow: none; }
+  .btn-plano { background: transparent; color: var(--gris); box-shadow: inset 0 0 0 2px var(--borde); font-weight: 700; font-size: 15px; }
+  .btn-peligro { background: transparent; color: var(--coral-t); box-shadow: none; font-weight: 700; font-size: 15px; }
+  .btn:active { transform: translateY(2px); box-shadow: none; }
+  .par { display: flex; gap: 10px; }
+  .par .btn { flex: 1; }
+
+  .seg { display: flex; gap: 4px; background: var(--tarjeta); padding: 4px; border-radius: 16px; margin-bottom: 16px; box-shadow: 0 3px 10px var(--sombra); }
+  .seg button { flex: 1; padding: 10px 4px; border-radius: 12px; font-size: 14px; font-weight: 700; color: var(--gris); min-height: 40px; }
+  .seg button.sel { background: var(--durazno); color: var(--durazno-t); }
+
+  .filtros { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+  .filtro { padding: 9px 14px; border-radius: 999px; font-size: 14px; font-weight: 700; background: var(--tarjeta); box-shadow: 0 2px 8px var(--sombra); min-height: 44px; }
+  .filtro.sel { background: var(--durazno); color: var(--durazno-t); }
+
+  .campo, .buscador { width: 100%; font-family: inherit; font-size: 16px; color: var(--tinta); padding: 14px 16px; background: var(--tarjeta); border: 2px solid var(--borde); border-radius: 16px; margin-bottom: 12px; }
+  .campo:focus, .buscador:focus { border-color: var(--durazno-s); outline: none; }
+  textarea.campo { min-height: 80px; resize: vertical; }
+  .etiqueta { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; color: var(--gris); margin: 14px 0 8px; }
+  .pista { font-size: 13px; color: var(--gris); margin: -4px 0 12px; }
+
+  .receta { display: block; width: 100%; text-align: left; background: var(--tarjeta); border-radius: 20px; padding: 15px 17px; margin-bottom: 8px; box-shadow: 0 2px 8px var(--sombra); }
+  .receta h3 { font-size: 16px; font-weight: 800; margin: 0 0 3px; }
+  .receta p { margin: 0; font-size: 13px; color: var(--gris); }
+  .marcas { display: flex; gap: 6px; margin-top: 9px; flex-wrap: wrap; }
+  .marca { font-size: 10px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; border-radius: 7px; padding: 4px 8px; background: var(--suave); color: var(--gris); }
+  .vacio-msg { color: var(--gris); font-size: 15px; padding: 16px 2px; }
+
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 4px 0 8px; }
+  .chip { display: inline-flex; align-items: center; gap: 8px; padding: 9px 14px; background: var(--tarjeta); border-radius: 999px; font-size: 14px; font-weight: 600; box-shadow: 0 2px 8px var(--sombra); min-height: 40px; }
+  .chip button { color: var(--gris); font-size: 18px; line-height: 1; min-height: 0; }
+  .chip.n, .chip.t { background: var(--durazno); color: var(--durazno-t); box-shadow: none; }
+
+  .titulo { font-family: 'Nunito', sans-serif; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; color: var(--gris); margin: 20px 0 8px; }
+  .sub { font-size: 12.5px; color: var(--gris); margin: 0 0 14px; line-height: 1.5; }
+  .barra { display: flex; gap: 3px; margin-top: 8px; }
+  .barra i { width: 15px; height: 6px; background: var(--borde); border-radius: 3px; }
+  .barra i.si { background: var(--menta-s); }
+
+  .rejilla { background: var(--tarjeta); border-radius: 22px; padding: 12px; margin-bottom: 16px; box-shadow: 0 6px 18px var(--sombra); }
+  .fila-r { display: flex; align-items: stretch; gap: 5px; margin-bottom: 5px; }
+  .dia-r { flex: none; width: 28px; font-size: 11px; font-weight: 800; color: var(--gris); display: flex; align-items: center; }
+  .fila-r.hoy .dia-r { color: var(--durazno-t); }
+  .celda { flex: 1; min-width: 0; background: var(--fondo); border-radius: 12px; padding: 8px 7px; font-size: 10px; font-weight: 700; line-height: 1.25; text-align: left; overflow: hidden; height: 46px; min-height: 46px; }
+  .celda .pto { display: block; width: 8px; height: 8px; border-radius: 50%; background: var(--borde); margin-bottom: 3px; }
+  .cabecera-r { display: flex; gap: 5px; margin: 0 0 6px 33px; }
+  .cabecera-r span { flex: 1; font-size: 10px; font-weight: 800; color: var(--gris); text-transform: uppercase; letter-spacing: .04em; }
+
+  .anillos { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+  .celda-obj { background: var(--tarjeta); border-radius: 20px; padding: 14px 10px 16px; box-shadow: 0 2px 8px var(--sombra); display: flex; flex-direction: column; align-items: center; gap: 2px; min-height: 132px; }
+  .celda-obj b { font-size: 14px; font-weight: 800; margin-top: 4px; }
+  .celda-obj span { font-size: 11px; color: var(--gris); font-weight: 700; }
+  .anillo { width: 64px; height: 64px; }
+  .anillo-n { font-size: 20px; font-weight: 800; fill: var(--tinta); font-family: 'Nunito', sans-serif; }
+  .obj { background: var(--tarjeta); border-radius: 20px; padding: 16px 17px; margin-bottom: 8px; box-shadow: 0 2px 8px var(--sombra); }
+  .obj-cab { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+  .obj-cab b { font-size: 16px; font-weight: 800; }
+  .obj-cab span { font-size: 13px; font-weight: 700; color: var(--gris); text-align: right; }
+  .pips { display: flex; gap: 4px; margin: 10px 0 8px; flex-wrap: wrap; }
+  .pip { width: 22px; height: 10px; border-radius: 5px; background: var(--borde); }
+  .pip.on { background: var(--menta-s); }
+  .pip.sobra { background: var(--coral-s); }
+  .obj p { margin: 0; font-size: 13px; color: var(--gris); }
+  .obj.bien { box-shadow: 0 4px 12px var(--sombra), inset 4px 0 0 var(--menta-s); }
+  .obj.falta { box-shadow: 0 4px 12px var(--sombra), inset 4px 0 0 var(--limon-s); }
+  .obj.pasa { box-shadow: 0 4px 12px var(--sombra), inset 4px 0 0 var(--coral-s); }
+  .grafica { display: flex; align-items: flex-end; gap: 6px; height: 130px; margin-top: 6px; }
+  .grafica .col { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; height: 100%; }
+  .grafica .vv { font-size: 10px; font-weight: 800; color: var(--gris); margin-bottom: 3px; }
+  .grafica .bb { width: 100%; background: var(--borde); border-radius: 8px 8px 3px 3px; }
+  .grafica .bb.act { background: var(--durazno-s); }
+  .grafica .ee { font-size: 9px; font-weight: 700; color: var(--gris); margin-top: 5px; }
+  .spark { display: flex; align-items: flex-end; gap: 5px; height: 34px; margin-top: 10px; }
+  .spark div { flex: 1; background: var(--borde); border-radius: 4px 4px 0 0; min-height: 3px; }
+  .spark div.act { background: var(--durazno-s); }
+  .spark-pie { display: flex; gap: 5px; margin-top: 4px; }
+  .spark-pie span { flex: 1; font-size: 9px; font-weight: 700; color: var(--gris); text-align: center; }
+
+  .editor { background: var(--tarjeta); border-radius: 18px; padding: 14px 16px; margin-bottom: 10px; box-shadow: 0 3px 10px var(--sombra); }
+  .editor-cab { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 8px; }
+  .editor-cab b { font-size: 15px; font-weight: 800; }
+  .paso { display: flex; align-items: center; gap: 10px; }
+  .paso button { width: 44px; height: 44px; border-radius: 14px; font-weight: 800; font-size: 20px; background: var(--fondo); box-shadow: inset 0 0 0 2px var(--borde); }
+  .paso b { min-width: 28px; text-align: center; font-size: 18px; font-weight: 800; }
+  .quitar { font-size: 13px; font-weight: 700; color: var(--coral-t); min-height: 40px; }
+  .colores { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+  .color { width: 36px; height: 36px; min-height: 36px; border-radius: 12px; }
+  .color.sel { outline: 3px solid var(--tinta); outline-offset: 2px; }
+
+  nav { position: fixed; bottom: 0; left: 0; right: 0; max-width: 640px; margin: 0 auto; display: flex; gap: 4px; background: var(--tarjeta); border-top: 1px solid var(--borde); padding: 8px 8px calc(10px + env(safe-area-inset-bottom)); }
+  nav button { flex: 1; padding: 6px 2px; font-size: 10px; font-weight: 700; color: var(--gris); border-radius: 14px; min-height: 52px; display: flex; flex-direction: column; align-items: center; gap: 3px; }
+  nav svg { width: 21px; height: 21px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  nav button.activa { color: var(--durazno-t); background: var(--durazno); }
+
+  .fondo-modal { position: fixed; inset: 0; background: rgba(40,32,37,.42); display: flex; align-items: flex-end; z-index: 20; }
+  .hoja { width: 100%; max-width: 640px; margin: 0 auto; max-height: 92vh; max-height: 92dvh; overscroll-behavior: contain; overflow-y: auto; background: var(--fondo); border-radius: 28px 28px 0 0; padding: 10px 20px calc(24px + env(safe-area-inset-bottom)); animation: subir .24s cubic-bezier(.2,.8,.3,1); }
+  @keyframes subir { from { transform: translateY(24px); opacity: .5; } }
+  @media (prefers-reduced-motion: reduce) { .hoja { animation: none; } }
+  .asa { width: 40px; height: 4px; border-radius: 2px; background: var(--borde); margin: 6px auto 14px; }
+  .hoja h2 { font-family: 'Caveat', cursive; font-weight: 700; font-size: 26px; margin: 0 0 8px; }
+  .texto-receta { -webkit-user-select: text; user-select: text; background: var(--tarjeta); border-radius: 18px; padding: 16px; font-size: 15px; white-space: pre-wrap; max-height: 30vh; overflow-y: auto; margin-bottom: 14px; }
+
+  .moviendo, .aviso { position: fixed; left: 14px; right: 14px; max-width: 612px; margin: 0 auto; bottom: calc(102px + env(safe-area-inset-bottom)); background: var(--lavanda); color: var(--lavanda-t); border-radius: 18px; padding: 14px 16px; font-size: 14px; font-weight: 700; box-shadow: 0 6px 20px rgba(40,32,37,.2); }
+  .moviendo { display: flex; align-items: center; gap: 12px; z-index: 15; }
+  .moviendo strong { font-weight: 800; flex: 1; }
+  .moviendo button { color: var(--durazno-t); background: var(--durazno); padding: 8px 14px; border-radius: 12px; font-weight: 800; font-size: 13px; min-height: 0; }
+  .aviso { z-index: 30; }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1 id="titulo-p">Hoy</h1>
+    <div class="fecha" id="fecha"></div>
+    <div class="fecha" id="estado-sync" style="font-size:11px"></div>
+  </div>
+  <button class="ico" onclick="hojaAjustes()">Ajustes</button>
+</header>
+
+<main>
+  <section id="v-hoy"></section>
+  <section id="v-semana" class="oculto"></section>
+  <section id="v-recetas" class="oculto"></section>
+  <section id="v-dieta" class="oculto"></section>
+  <section id="v-despensa" class="oculto"></section>
+</main>
+
+<nav>
+  <button id="t-hoy" class="activa" onclick="verVista('hoy')" aria-label="Hoy"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span>Hoy</span></button>
+  <button id="t-semana" onclick="verVista('semana')" aria-label="Semana"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M8 3v4M16 3v4M3 11h18"/></svg><span>Semana</span></button>
+  <button id="t-recetas" onclick="verVista('recetas')" aria-label="Recetas"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h11a3 3 0 013 3v13H8a3 3 0 01-3-3z"/><path d="M9 9h7M9 13h5"/></svg><span>Recetas</span></button>
+  <button id="t-dieta" onclick="verVista('dieta')" aria-label="Dieta"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V10M10 19V5M16 19v-6M22 19H2"/></svg><span>Dieta</span></button>
+  <button id="t-despensa" onclick="verVista('despensa')" aria-label="Cocina"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16v16H4z"/><path d="M4 12h16M10 8v0M10 16v0"/></svg><span>Cocina</span></button>
+</nav>
+
+<div id="capa"></div>
+
+<script>
+const DIAS = ['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo'];
+const COMIDAS = ['Desayuno','Comida','Cena'];
+const PERSONAS = ['Jaco','Alba'];
+const DIA_MS = 86400000;
+const PALETA = ['durazno','menta','lavanda','limon','coral','cielo','arena'];
+const MESES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+
+const SINTOMAS = ['Ardor','Reflujo','Hinchazón','Pesadez','Dolor','Gases'];
+function rapidosPorDefecto(){
+  return ['Ensalada','Bocadillo','Sándwich','Tortilla francesa','Pasta','Arroz','Sopa o caldo','Pollo a la plancha',
+          'Pescado a la plancha','Verdura salteada','Legumbres de bote','Fruta y yogur','Pizza','Hamburguesa',
+          'Menú del día','Tapas o picoteo','Sushi','Comida de restaurante'];
+}
+
+function gruposPorDefecto() {
+  return [{n:'Legumbre',c:'durazno'},{n:'Pescado',c:'cielo'},{n:'Carne blanca',c:'limon'},
+          {n:'Carne roja',c:'coral'},{n:'Huevos',c:'arena'},{n:'Verdura',c:'menta'},{n:'Cereal',c:'lavanda'},
+          {n:'Fermentado',c:'menta'},{n:'Ultraprocesado',c:'coral'}];
+}
+function dificultadesPorDefecto() { return ['Rápido','Con tiempo','De finde']; }
+function catalogoObjetivos(){
+  return [
+    { id:'o1', nombre:'Legumbres', grupos:['Legumbre'], tipo:'min', obj:4,
+      guia:'Al menos 4 a la semana.',
+      fuente:'La AESAN subió en 2022 de 2-4 raciones semanales a un mínimo de 4, hasta llegar a consumo diario. EAT-Lancet 2025 pone legumbres y frutos secos como fuente principal de proteína. Las dos coinciden.' },
+    { id:'o2', nombre:'Pescado', grupos:['Pescado'], tipo:'min', obj:3,
+      guia:'Al menos 3 a la semana, sobre todo azul.',
+      fuente:'AESAN 2022: mínimo 3 raciones semanales, mayoritariamente azul. EAT-Lancet lo mantiene en consumo moderado. El 3 es donde las dos se tocan.' },
+    { id:'o3', nombre:'Verdura', grupos:['Verdura'], tipo:'min', obj:7,
+      guia:'De plato o de guarnición.',
+      fuente:'La recomendación real son 3 raciones de hortalizas al día. Como aquí solo contamos comidas y cenas, 7 equivale a que la verdura salga a diario en al menos un plato. Se queda corto a propósito.' },
+    { id:'o4', nombre:'Carne roja', grupos:['Carne roja'], tipo:'max', obj:1,
+      guia:'Cuanto menos, mejor.',
+      fuente:'AESAN y EAT-Lancet coinciden en minimizarla sin dar cifra. El 1 es una referencia práctica; bajadlo a 0 si queréis ser estrictos.' },
+    { id:'o5', nombre:'Carne', grupos:['Carne blanca','Carne roja'], tipo:'max', obj:3,
+      guia:'Mejor ave o conejo.',
+      fuente:'AESAN bajó en 2022 a 0-3 raciones semanales priorizando ave y conejo. Tomamos el 3, que es el techo de la fuente más permisiva.' },
+    { id:'o6', nombre:'Huevos', grupos:['Huevos'], tipo:'max', obj:4,
+      guia:'Contando también los del desayuno.',
+      fuente:'AESAN 2022 recomienda hasta 4 huevos semanales. Aquí solo contamos comidas y cenas, así que el número real será mayor.' },
+    { id:'o7', nombre:'Ultraprocesados', grupos:['Ultraprocesado'], tipo:'max', obj:2,
+      guia:'Los justos.',
+      fuente:'Ninguna guía da cifra: dicen minimizar. El 2 es una referencia nuestra para que dejen de ser invisibles. Es el más discutible de la lista.' },
+    { id:'o8', nombre:'Fermentados', grupos:['Fermentado'], tipo:'min', obj:3,
+      guia:'Yogur, kéfir, chucrut.',
+      fuente:'Sin recomendación oficial de raciones. Va en la línea del objetivo de variedad: la investigación asocia diversidad vegetal y fermentados con una microbiota más diversa.' }
+  ];
+}
+function objetivosPorDefecto(){
+  return catalogoObjetivos().slice(0,4).map(function(o){return JSON.parse(JSON.stringify(o));});
+}
+
+function semanaVacia(){
+  const s={menu:{},segundo:{},aparte:{},cocinas:{},fijos:{},sobras:{},guarnicion:{},doble:{},registro:{}};
+  DIAS.forEach(function(d){COMIDAS.forEach(function(c){const k=d+'|'+c;
+    s.menu[k]=''; s.segundo[k]=''; s.aparte[k]=null; s.cocinas[k]=''; s.fijos[k]=false; s.sobras[k]=false; s.guarnicion[k]=false; s.doble[k]=false; s.registro[k]=null;});});
+  return s;
+}
+function lunesDe(f){
+  const d=new Date(f.getFullYear(),f.getMonth(),f.getDate());
+  d.setDate(d.getDate()-((d.getDay()+6)%7));
+  return d;
+}
+function S(){ return SEMANA_VISTA==='prox' ? DATOS.prox : DATOS.act; }
+
+function datosIniciales() {
+  const hoy = Date.now();
+  const base = [
+    ['Tostada con tomate','Pan, tomate, aceite, sal','','',4,3,['Cereal'],'Rápido','Pan'],
+    ['Yogur con fruta y nueces','Yogur, plátano, nueces, miel','https://www.notion.so/Yogur','',6,10,[],'Rápido','Yogur'],
+    ['Tortilla de patatas','Patata, huevos, cebolla, aceite','https://www.notion.so/Tortilla',
+     'Pela y corta las patatas finas.\nFríelas a fuego lento con la cebolla.\nBate los huevos, mezcla y cuaja dos minutos por lado.',9,6,['Huevos'],'Con tiempo','Huevos'],
+    ['Lentejas de la abuela','Lentejas, chorizo, zanahoria, laurel, cebolla','',
+     'Sofríe cebolla y zanahoria.\nAñade lentejas, chorizo y laurel.\nCubre con agua y cuece 40 minutos.',3,74,['Legumbre','Carne roja'],'Con tiempo','Lentejas'],
+    ['Merluza a la gallega','Merluza, patata, pimentón, ajo, aceite','','',5,12,['Pescado'],'Con tiempo','Merluza'],
+    ['Empanada de atún','Masa, atún, pimiento, cebolla, tomate frito','https://www.notion.so/Empanada','',2,96,['Pescado','Cereal'],'De finde','Atún'],
+    ['Crema de calabaza','Calabaza, patata, cebolla, caldo, queso','','',7,4,['Verdura'],'Rápido','Calabaza'],
+    ['Arroz con pollo','Arroz, pollo, pimiento, guisantes, caldo','','',4,20,['Carne blanca','Cereal'],'Con tiempo','Pollo'],
+    ['Pulpo á feira','Pulpo, patata, pimentón, aceite, sal gorda','','',1,140,['Pescado'],'De finde','Pulpo'],
+    ['Ensalada de garbanzos','Garbanzos, tomate, pepino, cebolla, atún','','',3,9,['Legumbre','Verdura'],'Rápido','Garbanzos'],
+    ['Pasta con pesto','Pasta, albahaca, piñones, parmesano, ajo','https://www.notion.so/Pesto','',5,17,['Cereal'],'Rápido','Pasta'],
+    ['Revuelto de setas','Huevos, setas, ajo, perejil','','',0,0,['Huevos','Verdura'],'Rápido','Setas'],
+    ['Filete con verduras','Ternera, calabacín, pimiento, cebolla','','',6,15,['Carne roja','Verdura'],'Rápido','Ternera'],
+    ['Caldo gallego','Grelos, patata, alubia, unto, chorizo','','',8,30,['Verdura','Legumbre'],'Con tiempo','Grelos']
+  ];
+  const r = base.map(function (x, i) {
+    return { id:'r'+i, nombre:x[0], ingredientes: x[1] ? x[1].split(', ') : [], url:x[2], texto:x[3],
+             veces:x[4], ultimaTs: x[5] ? hoy - x[5]*DIA_MS : 0, grupos:x[6], esfuerzo:x[7], principal:x[8] };
+  });
+
+  const menu={}, segundo={}, aparte={}, cocinas={}, fijos={}, sobras={}, guarnicion={}, doble={}, registro={};
+  DIAS.forEach(function (d) { COMIDAS.forEach(function (c) { const k=d+'|'+c; menu[k]=''; segundo[k]=''; aparte[k]=null; cocinas[k]=''; fijos[k]=false; sobras[k]=false; guarnicion[k]=false; doble[k]=false; registro[k]=null; }); });
+  menu['Lunes|Comida']='r3'; menu['Lunes|Cena']='r11';
+  menu['Martes|Comida']='r3'; menu['Martes|Cena']='r6';
+  menu['Miércoles|Comida']='r7'; menu['Miércoles|Cena']='r10';
+  menu['Jueves|Comida']='r12'; menu['Jueves|Cena']='r2';
+  menu['Viernes|Comida']='r13'; menu['Viernes|Cena']='r6';
+  menu['Sábado|Comida']='r5'; menu['Domingo|Comida']='r8';
+  sobras['Martes|Comida']=true; doble['Lunes|Comida']=true;
+  guarnicion['Miércoles|Cena']=true; guarnicion['Jueves|Cena']=true;
+  cocinas['Lunes|Comida']='Alba'; cocinas['Jueves|Cena']='Alba'; cocinas['Miércoles|Comida']='Jaco';
+  fijos['Lunes|Comida']=true; fijos['Jueves|Cena']=true;
+
+  return {
+    dias:DIAS, comidas:COMIDAS, recetas:r,
+    act:{menu:menu,segundo:segundo,aparte:aparte,cocinas:cocinas,fijos:fijos,sobras:sobras,guarnicion:guarnicion,doble:doble,registro:registro},
+    prox:semanaVacia(),
+    inicio: lunesDe(new Date()).getTime(),
+    gruposDef:gruposPorDefecto(), dificultades:dificultadesPorDefecto(), objetivos:objetivosPorDefecto(), variedad:30,
+    historial:(function(){
+      const base=[[3,2,6,4,2,3,1,24],[4,4,8,2,1,2,0,29],[2,1,5,5,3,4,3,22],[5,3,7,3,1,3,1,31],
+                  [3,3,6,3,2,2,1,27],[4,2,7,4,2,3,2,26],[2,2,4,5,3,4,2,21],[5,4,8,2,0,2,0,33],
+                  [4,3,7,3,1,3,1,30],[3,2,6,4,2,3,2,25],[4,4,7,2,1,2,1,32],[2,1,5,4,3,3,2,23]];
+      return base.map(function(x,i){
+        const ts=Date.now()-(base.length-i)*7*DIA_MS;
+        const plan={'Legumbres':x[0],'Pescado':x[1],'Verdura':x[2],'Carne':x[3],'Carne roja o procesada':x[4],'Huevos':x[5],'Ultraprocesados':x[6],'Fermentados':2};
+        let cump=0;
+        if(x[0]>=4)cump++; if(x[1]>=3)cump++; if(x[2]>=7)cump++; if(x[3]<=3)cump++;
+        if(x[4]<=1)cump++; if(x[5]<=4)cump++; if(x[6]<=2)cump++;
+        const f=new Date(ts);
+        return {nombre:f.getDate()+' '+MESES[f.getMonth()].slice(0,3), ts:ts, plan:plan, cumplidos:cump, variedad:x[7]};
+      });
+    })(),
+    rapidos: rapidosPorDefecto(),
+    compra:[{id:'c1',n:'Leche',auto:false},{id:'c2',n:'Papel de cocina',auto:false}],
+    destinos:{'leche':0,'queso':0,'yogur':0,'pan':3,'arroz':3,'merluza':1,'guisantes':1,'tomate':2},
+    freq:{'leche':6,'pan':5,'huevos':5,'queso':4,'tomate':4,'yogur':3,'plátano':3,'café':3,'arroz':2,'aceite':2},
+    opciones:{dificultad:false, rejilla:true, registro:{Jaco:true, Alba:true}},
+    sitios:[
+      {n:'Frigorífico', items:['Huevos','Cebolla','Queso','Yogur']},
+      {n:'Congelador', items:['Merluza','Guisantes','Pan de molde']},
+      {n:'Huerto', items:['Tomate','Calabacín','Perejil']},
+      {n:'Despensa', items:['Lentejas','Patata','Aceite','Pimentón','Ajo','Arroz']}
+    ],
+    plantillas:[{ id:'p1', nombre:'Semana fácil de agosto', menu:Object.assign({},menu), cocinas:Object.assign({},cocinas) }]
+  };
+}
+
+let DATOS = datosIniciales();
+let SEMANA_VISTA='act';
+let VISTA='hoy', MOVIENDO=null, BUSQUEDA='', VER_PASADOS=false, COMPACTA=false, FILTRO_ESF='';
+
+
+let UNDO=null;
+function copiaProfunda(x){ return JSON.parse(JSON.stringify(x)); }
+function puntoDeVuelta(msg){
+  UNDO={datos:copiaProfunda(DATOS),reg:copiaProfunda(LOCAL.reg||{}),msg:msg};
+  const p=document.querySelector('.moviendo.undo'); if(p) p.remove();
+  const d=document.createElement('div'); d.className='moviendo undo';
+  d.innerHTML='<strong>'+esc(msg)+'</strong><button onclick="deshacer()">Deshacer</button>';
+  document.body.appendChild(d);
+  setTimeout(function(){ if(d.parentNode) d.remove(); },6000);
+}
+function deshacer(){
+  if(!UNDO) return;
+  DATOS=UNDO.datos;
+  if(UNDO.reg){ LOCAL.reg=UNDO.reg; guardarLocal(); }
+  UNDO=null;
+  const d=document.querySelector('.moviendo.undo'); if(d) d.remove();
+  cerrarHoja(); pintar(); aviso('Deshecho.');
+}
+let GUARDANDO=null;
+/* === Sincronización con Google (rellenad estas dos líneas) === */
+const API = 'PEGA_AQUI_LA_URL_QUE_TERMINA_EN_exec';
+const TOKEN = 'PEGA_AQUI_LA_MISMA_CLAVE_DEL_SCRIPT';
+
+let REV = 0, SUBIENDO = false, PENDIENTE = false, ULTIMO_ERROR = 0;
+
+function guardar(){
+  if(GUARDANDO) return;
+  GUARDANDO=setTimeout(function(){
+    GUARDANDO=null;
+    try{ localStorage.setItem('menu-datos', JSON.stringify({rev:REV,datos:DATOS})); }catch(e){}
+    subir();
+  },400);
+}
+function cargarGuardado(){
+  try{ const x=localStorage.getItem('menu-datos'); if(!x) return false;
+    const c=JSON.parse(x);
+    const d=c&&c.datos?c.datos:c;
+    if(!d||!d.act||!d.recetas) return false;
+    REV=(c&&c.rev)||0; DATOS=d; migrar(); return true;
+  }catch(e){ return false; }
+}
+function adoptar(datos,rev){
+  if(!datos||!datos.act||!datos.recetas) return false;
+  DATOS=datos; REV=rev||0; migrar();
+  try{ localStorage.setItem('menu-datos', JSON.stringify({rev:REV,datos:DATOS})); }catch(e){}
+  comprobarSemana(); pintar();
+  return true;
+}
+function marcarEstado(txt){
+  const e=document.getElementById('estado-sync');
+  if(e) e.textContent=txt||'';
+}
+function bajar(silencioso){
+  if(!API || API.indexOf('http')!==0) return;
+  fetch(API+'?token='+encodeURIComponent(TOKEN)+'&t='+Date.now())
+    .then(function(r){return r.json();})
+    .then(function(j){
+      if(!j.ok) { marcarEstado('Revisad la clave'); return; }
+      marcarEstado('');
+      if(j.rev>REV && j.datos){
+        adoptar(j.datos,j.rev);
+        if(!silencioso) aviso('Actualizado con los cambios del otro móvil.');
+      } else if(REV===0 && j.rev===0 && !j.datos){
+        subir();
+      }
+    })
+    .catch(function(){ marcarEstado('Sin conexión'); });
+}
+function subir(){
+  if(!API || API.indexOf('http')!==0) return;
+  if(SUBIENDO){ PENDIENTE=true; return; }
+  SUBIENDO=true;
+  fetch(API,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},
+    body:JSON.stringify({token:TOKEN,rev:REV,datos:DATOS})})
+    .then(function(r){return r.json();})
+    .then(function(j){
+      SUBIENDO=false;
+      if(j.ok){
+        REV=j.rev; marcarEstado('');
+        try{ localStorage.setItem('menu-datos', JSON.stringify({rev:REV,datos:DATOS})); }catch(e){}
+      } else if(j.conflicto){
+        adoptar(j.datos,j.rev);
+        aviso('El otro móvil había cambiado algo antes. Me quedo con lo suyo.');
+      } else {
+        marcarEstado('Revisad la clave');
+      }
+      if(PENDIENTE){ PENDIENTE=false; subir(); }
+    })
+    .catch(function(){
+      SUBIENDO=false; PENDIENTE=false;
+      marcarEstado('Sin conexión, se guardará al volver');
+    });
+}
+function migrar(){
+  const base=datosIniciales();
+  if(!Array.isArray(DATOS.sitios)||!DATOS.sitios.length) DATOS.sitios=base.sitios;
+  else {
+    const tiene=function(re){ return DATOS.sitios.some(function(s){ return re.test(norm(s.n)); }); };
+    if(!tiene(/nevera|frigor/)) DATOS.sitios.unshift({n:'Frigorífico',items:[]});
+    if(!tiene(/congelador|congela/)){
+      let iFrio=0;
+      DATOS.sitios.forEach(function(s,i){ if(/nevera|frigor/.test(norm(s.n))) iFrio=i; });
+      DATOS.sitios.splice(iFrio+1,0,{n:'Congelador',items:[]});
+    }
+    if(!tiene(/huerto/)) DATOS.sitios.push({n:'Huerto',items:[]});
+    if(!tiene(/despensa|alacena/)) DATOS.sitios.push({n:'Despensa',items:[]});
+    DATOS.sitios.forEach(function(s){ s.items=s.items||[]; });
+  }
+  if(!Array.isArray(DATOS.rapidos)||!DATOS.rapidos.length) DATOS.rapidos=base.rapidos;
+  if(!Array.isArray(DATOS.compra)) DATOS.compra=[];
+  if(!DATOS.destinos) DATOS.destinos={};
+  if(!DATOS.freq) DATOS.freq={};
+  if(!DATOS.opciones) DATOS.opciones=base.opciones;
+  if(DATOS.opciones) delete DATOS.opciones.registro;
+  delete DATOS.sensaciones;
+  if(!Array.isArray(DATOS.objetivos)||!DATOS.objetivos.length) DATOS.objetivos=base.objetivos;
+  if(!Array.isArray(DATOS.gruposDef)||!DATOS.gruposDef.length) DATOS.gruposDef=base.gruposDef;
+  if(!Array.isArray(DATOS.dificultades)||!DATOS.dificultades.length) DATOS.dificultades=base.dificultades;
+  if(!Array.isArray(DATOS.historial)) DATOS.historial=[];
+  if(!Array.isArray(DATOS.plantillas)) DATOS.plantillas=[];
+  if(!DATOS.prox) DATOS.prox=semanaVacia();
+  if(!DATOS.inicio) DATOS.inicio=lunesDe(new Date()).getTime();
+  if(!DATOS.variedad) DATOS.variedad=30;
+  ['menu','segundo','aparte','cocinas','fijos','sobras','guarnicion','doble','registro'].forEach(function(c){
+    [DATOS.act,DATOS.prox].forEach(function(sem){ if(sem && !sem[c]) sem[c]={}; });
+  });
+  DATOS.recetas.forEach(function(r){ r.grupos=r.grupos||[]; r.ingredientes=r.ingredientes||[]; });
+  guardar();
+}
+function attr(s){var t=String(s).split(String.fromCharCode(92)).join(String.fromCharCode(92,92));t=t.split(String.fromCharCode(39)).join(String.fromCharCode(92,39));return esc(t);}
+function esc(s){return String(s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function norm(s){return String(s).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim();}
+function raiz(p){return p.replace(/(es|s)$/,'');}
+function coincide(a1,b1){
+  const a=norm(a1), b=norm(b1);
+  if(!a||!b) return false;
+  if(a.indexOf(b)!==-1||b.indexOf(a)!==-1) return true;
+  const pa=a.split(' ').map(raiz), pb=b.split(' ').map(raiz);
+  return pb.some(function(x){return x.length>2&&pa.indexOf(x)!==-1;});
+}
+function receta(id){return id?(DATOS.recetas.filter(function(r){return r.id===id;})[0]||null):null;}
+function recetaPorNombre(n){return DATOS.recetas.filter(function(r){return norm(r.nombre)===norm(n);})[0]||null;}
+function enCasa(){
+  return (DATOS.sitios||[]).reduce(function(a,s){return a.concat(s.items||[]);},[]);
+}
+function sitioDe(x){
+  const s=(DATOS.sitios||[]).filter(function(y){return (y.items||[]).some(function(i){return i.toLowerCase()===x.toLowerCase();});})[0];
+  return s?s.n:'';
+}
+function grupoDef(n){return DATOS.gruposDef.filter(function(g){return g.n===n;})[0]||null;}
+function estiloGrupo(n){const g=grupoDef(n);return g?'background:var(--'+g.c+');color:var(--'+g.c+'-t)':'';}
+function colorGrupo(n){const g=grupoDef(n);return g?'var(--'+g.c+'-s)':'var(--borde)';}
+function aviso(t){
+  const p=document.querySelector('.aviso'); if(p) p.remove();
+  const d=document.createElement('div'); d.className='aviso'; d.textContent=t;
+  document.body.appendChild(d); setTimeout(function(){d.remove();},3000);
+}
+function hace(ts){
+  if(!ts) return 'nunca la habéis hecho';
+  const d=Math.round((Date.now()-ts)/DIA_MS);
+  if(d<7) return 'esta semana';
+  const s=Math.round(d/7);
+  if(s<9) return 'hace '+s+(s===1?' semana':' semanas');
+  return 'hace '+Math.round(d/30)+' meses';
+}
+function indiceHoy(){return (new Date().getDay()+6)%7;}
+function diaHoy(){return DIAS[indiceHoy()];}
+function mesActual(){return new Date().getMonth();}
+
+const TEMAS = [
+  { id:'melocoton', n:'Melocotón', c:'#FFDCC6', t:'#7A4B31', s:'#F7C4A4', o:'#FFCFB0', ot:'#5E381F' },
+  { id:'naranja',   n:'Naranja',   c:'#FFD3A8', t:'#7A4A17', s:'#F5BE86', o:'#FFC48C', ot:'#5D3810' },
+  { id:'menta',     n:'Menta',     c:'#CDEBDF', t:'#2F6350', s:'#A9DCC6', o:'#B6E2D1', ot:'#234C3D' },
+  { id:'cielo',     n:'Cielo',     c:'#D2EAF4', t:'#2F5C70', s:'#AFD8E8', o:'#BEE0EE', ot:'#244757' },
+  { id:'lavanda',   n:'Lavanda',   c:'#E3DCF7', t:'#4E3E80', s:'#CBBFED', o:'#D6CCF2', ot:'#3C2F64' },
+  { id:'rosa',      n:'Rosa',      c:'#FBD3DA', t:'#8C3F51', s:'#F3B7C2', o:'#F8C3CD', ot:'#6D2F3E' }
+];
+function tema(){ return TEMAS.filter(function(t){return t.id===LOCAL.tema;})[0] || TEMAS[0]; }
+function aplicarTema(){
+  const t=tema(), r=document.documentElement;
+  if(!r||!r.style) return;
+  const oscuro = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  r.style.setProperty('--durazno', oscuro? t.s : t.c);
+  r.style.setProperty('--durazno-t', oscuro? '#241E22' : t.t);
+  r.style.setProperty('--durazno-s', t.s);
+}
+function hojaTema(){
+  let h='<h2>Color de la app</h2><p class="sub">Solo en este móvil: Alba puede tener otro. Cambia el color de las acciones y todos se leen bien encima.</p><div class="chips">';
+  TEMAS.forEach(function(t){
+    h+='<button class="chip" style="background:'+t.c+';color:'+t.t+';box-shadow:'+(LOCAL.tema===t.id?'inset 0 0 0 3px '+t.s:'none')+'" onclick="ponerTema(\''+t.id+'\')">'+t.n+(LOCAL.tema===t.id?' ✓':'')+'</button>';
+  });
+  h+='</div><button class="btn btn-plano" onclick="hojaAjustes()">Volver</button>';
+  abrirHoja(h);
+}
+function ponerTema(id){
+  LOCAL.tema=id; guardarLocal(); aplicarTema(); hojaTema(); pintar();
+}
+const ES_APP=true, TIENE_GLOBO=true;
+let LOCAL = { quien:'', tema:'melocoton', dificultad:false, rejilla:true };
+function cargarLocal(){
+  try{ const x=JSON.parse(localStorage.getItem('menu-local')||'{}'); Object.keys(x).forEach(function(k){LOCAL[k]=x[k];}); }catch(e){}
+}
+function guardarLocal(){
+  try{ localStorage.setItem('menu-local', JSON.stringify(LOCAL)); }catch(e){}
+}
+function yo(){ return LOCAL.quien || ''; }
+function hojaQuien(primera){
+  let h='<h2>'+(primera?'¿Quién usa este móvil?':'Este móvil es de')+'</h2>'+
+        '<p class="sub">Sirve para saber de quién son los ajustes de aspecto y para no preguntaros lo del otro. Se guarda solo aquí, no se comparte.</p>';
+  PERSONAS.forEach(function(p){
+    h+='<button class="btn '+(yo()===p?'btn-1':'btn-plano')+'" onclick="ponerQuien(\''+p+'\')">'+p+'</button>';
+  });
+  if(!primera) h+='<button class="btn btn-plano" onclick="hojaAjustes()">Volver</button>';
+  abrirHoja(h);
+}
+function ponerQuien(p){
+  LOCAL.quien=p; guardarLocal();
+  cerrarHoja(); pintar(); aviso('Hola, '+p+'.');
+}
+function verVista(v){
+  VISTA=v;
+  if(v!=='semana') SEMANA_VISTA='act';
+  ['hoy','semana','recetas','dieta','despensa'].forEach(function(x){
+    document.getElementById('v-'+x).classList.toggle('oculto', x!==v);
+    document.getElementById('t-'+x).classList.toggle('activa', x===v);
+  });
+  pintar(); window.scrollTo(0,0);
+}
+function resumenSemana(sem){
+  const s=sem||DATOS.act;
+  // Solo los objetivos comunes: el historial se comparte y los propios no salen de este móvil.
+  const plan={}; (DATOS.objetivos||[]).forEach(function(o){plan[o.nombre]=cuentaPlan(o,s);});
+  let n=0;
+  (DATOS.objetivos||[]).forEach(function(o){
+    const v=cuentaPlan(o,s);
+    if(o.tipo==='min'?v>=o.obj:v<=o.obj) n++;
+  });
+  return {plan:plan, cumplidos:n, variedad:variedadPlan(s)};
+}
+function archivarSemana(sem,etiqueta){
+  const usadas=Object.keys(sem.menu).filter(function(k){return sem.menu[k];});
+  if(!usadas.length) return false;
+  const r=resumenSemana(sem);
+  DATOS.historial.push({nombre:etiqueta,ts:Date.now(),plan:r.plan,cumplidos:r.cumplidos,variedad:r.variedad});
+  if(DATOS.historial.length>60) DATOS.historial=DATOS.historial.slice(-60);
+  DATOS.plantillas.push({id:'p'+Date.now()+Math.floor(Math.random()*99),nombre:etiqueta,
+    menu:Object.assign({},sem.menu),cocinas:Object.assign({},sem.cocinas)});
+  usadas.forEach(function(k){
+    const rec=receta(sem.menu[k]);
+    if(rec&&!sem.sobras[k]){rec.veces+=1;rec.ultimaTs=Date.now();}
+  });
+  return true;
+}
+function pasarDeSemana(){
+  const vieja=DATOS.act;
+  const f=new Date(DATOS.inicio);
+  archivarSemana(vieja,'Semana '+f.getDate()+' '+MESES[f.getMonth()].slice(0,3));
+  const nueva=DATOS.prox;
+  Object.keys(vieja.fijos).forEach(function(k){
+    if(vieja.fijos[k]&&vieja.menu[k]){
+      nueva.fijos[k]=true;
+      if(!nueva.menu[k]){ nueva.menu[k]=vieja.menu[k]; nueva.cocinas[k]=vieja.cocinas[k]; }
+    }
+  });
+  DATOS.act=nueva;
+  DATOS.prox=semanaVacia();
+  Object.keys(nueva.fijos).forEach(function(k){ if(nueva.fijos[k]&&nueva.menu[k]){ DATOS.prox.fijos[k]=true; DATOS.prox.menu[k]=nueva.menu[k]; } });
+  DATOS.inicio=lunesDe(new Date()).getTime();
+  // el diario personal es de la semana que acaba: se archiva y se empieza limpio
+  LOCAL.reg={}; LOCAL.regSemana=DATOS.inicio; guardarLocal();
+  guardar();
+}
+function comprobarSemana(){
+  const lunes=lunesDe(new Date()).getTime();
+  let vueltas=0;
+  while(DATOS.inicio<lunes && vueltas<8){ pasarDeSemana(); vueltas++; }
+  if(vueltas) aviso('Semana cerrada sola. La que planificasteis ya está activa.');
+  return vueltas;
+}
+
+function rangoSemana(prox){
+  const l=new Date(DATOS.inicio||lunesDe(new Date()).getTime());
+  if(prox) l.setDate(l.getDate()+7);
+  const d=new Date(l); d.setDate(d.getDate()+6);
+  const m1=MESES[l.getMonth()], m2=MESES[d.getMonth()];
+  return l.getDate()+(m1===m2?'':' de '+m1)+' al '+d.getDate()+' de '+m2;
+}
+function cabecera(){
+  const f=new Date();
+  const fechaHoy=DIAS[indiceHoy()]+', '+f.getDate()+' de '+MESES[f.getMonth()];
+  if(VISTA==='semana'){
+    const prox=SEMANA_VISTA==='prox';
+    return [prox?'La que viene':'Esta semana', rangoSemana(prox)];
+  }
+  if(VISTA==='recetas'){
+    const n=DATOS.recetas.length;
+    return ['Recetas', n+(n===1?' guardada':' guardadas')];
+  }
+  if(VISTA==='dieta') return ['Dieta', 'Esta semana'+(yo()?' · '+yo():'')];
+  if(VISTA==='despensa'){
+    const c=(DATOS.compra||[]).length, e=enCasa().length;
+    return ['Cocina', (c?c+' por comprar · ':'')+e+' cosas en casa'];
+  }
+  return ['Hoy', fechaHoy];
+}
+function pintar(){
+  aplicarTema();
+  const tb=document.getElementById('t-despensa');
+  if(tb) tb.classList.toggle('con-punto',((DATOS.compra||[]).length>0));
+  const cab=cabecera();
+  document.getElementById('titulo-p').textContent = cab[0];
+  document.getElementById('fecha').textContent = cab[1];
+  if(VISTA==='hoy') pintarHoy();
+  if(VISTA==='semana') pintarSemana();
+  if(VISTA==='recetas') pintarRecetas();
+  if(VISTA==='dieta') pintarDieta();
+  if(VISTA==='despensa') pintarDespensa();
+  pintarBarraMover();
+  actualizarGlobo();
+  guardar();
+}
+
+/* ---------- HOY (el registro es personal: vive solo en este móvil) ---------- */
+function regTodo(){
+  if(!LOCAL.reg || LOCAL.regSemana!==DATOS.inicio){ LOCAL.reg={}; LOCAL.regSemana=DATOS.inicio; }
+  return LOCAL.reg;
+}
+function getReg(k){ const r=regTodo()[k]; return r||null; }
+function setReg(k,v){ regTodo()[k]=v; guardarLocal(); }
+function delReg(k){ delete regTodo()[k]; guardarLocal(); }
+function moverReg(a,b){
+  const t=regTodo()[a]; const u=regTodo()[b];
+  if(u) regTodo()[a]=u; else delete regTodo()[a];
+  if(t) regTodo()[b]=t; else delete regTodo()[b];
+  guardarLocal();
+}
+function apunta(){ return LOCAL.apuntar!==false; }
+function registroActivo(){ return apunta(); }
+
+function pendientesDia(dia){
+  return COMIDAS.filter(function(c){ const k=dia+'|'+c; return S().menu[k] && !getReg(k); });
+}
+function sinApuntar(){
+  if(!apunta()) return 0;
+  let n=0;
+  const hasta=indiceHoy();
+  for(let i=0;i<=hasta;i++){
+    const d=DIAS[i];
+    COMIDAS.forEach(function(c){
+      const k=d+'|'+c;
+      if(DATOS.act.menu[k] && !getReg(k)) n++;
+    });
+  }
+  return n;
+}
+function actualizarGlobo(){
+  if(!('setAppBadge' in navigator)) return;
+  const n=sinApuntar();
+  try{ n>0 ? navigator.setAppBadge(n) : navigator.clearAppBadge(); }catch(e){}
+}
+function pedirGlobo(){
+  if(!('Notification' in window)){ aviso('Este iPhone no lo admite. Hace falta iOS 16.4 o más.'); return; }
+  Notification.requestPermission().then(function(p){
+    if(p==='granted'){ actualizarGlobo(); aviso('Listo. El globo enseñará lo que te quede por apuntar.'); }
+    else aviso('Sin permiso no se puede pintar el globo.');
+  });
+}
+function pintarHoy(){
+  const dia=diaHoy();
+  if(!DATOS.recetas.length){
+    document.getElementById('v-hoy').innerHTML=
+      '<div class="tarjeta"><h2>Empezad por aquí</h2>'+
+      '<p class="desc">Esto funciona con vuestras recetas, no con un recetario de fuera. Añadid tres o cuatro de las de siempre y lo demás sale solo.</p>'+
+      '<button class="btn btn-1" onclick="hojaReceta(null)">Añadir la primera receta</button>'+
+      (ES_APP?'':'<button class="btn btn-plano" onclick="DATOS=datosIniciales();pintar();aviso(\'Ejemplo cargado.\')">Ver un ejemplo ya montado</button>')+'</div>';
+    return;
+  }
+  SEMANA_VISTA='act';
+  let h='<div class="tarjeta">';
+  COMIDAS.forEach(function(comida){
+    const k=dia+'|'+comida;
+    const r=receta(S().menu[k]);
+    if(!r){
+      h+='<button class="hueco vacio-hoy" onclick="tocarHueco(\''+dia+'\',\''+comida+'\')">'+
+         '<span class="pastilla">'+comida+'</span>'+
+         '<span class="nombre-plato gris">Poner algo</span>'+
+         '<span class="flecha">+</span></button>';
+      return;
+    }
+    h+='<button class="hueco" onclick="tocarHueco(\''+dia+'\',\''+comida+'\')">'+
+       '<span class="pastilla">'+comida+'</span>'+
+       '<span class="nombre-plato">'+esc(r.nombre)+'</span>'+
+       (S().cocinas[k]?'<span class="avatar'+(S().cocinas[k]===PERSONAS[1]?' b':'')+'">'+S().cocinas[k].charAt(0)+'</span>':'')+
+       '<span class="flecha">›</span></button>';
+    h+=lineasExtra(k);
+    const v=getReg(k);
+    if(v && apunta() && v.q!=='no'){
+      h+='<div class="fila-sensacion"><span class="quien">'+esc(etiquetaComido(k))+'</span>';
+      [['bien','Bien'],['regular','Regular'],['mal','Mal']].forEach(function(x){
+        h+='<button class="mini-sens'+(v.s===x[0]?' sel-'+x[0]:'')+'" onclick="sentarRapido(\''+dia+'\',\''+comida+'\',\''+x[0]+'\')">'+x[1]+'</button>';
+      });
+      h+='</div>';
+    }
+  });
+  h+='</div>';
+
+  if(apunta()){
+    const pend=pendientesDia(dia);
+    if(pend.length) h+='<button class="btn btn-1" onclick="hojaRegistro(\''+dia+'\')">Apuntar qué comí</button>';
+    const iAyer=(indiceHoy()+6)%7;
+    const pAyer=pendientesDia(DIAS[iAyer]);
+    if(pAyer.length && indiceHoy()>0) h+='<button class="btn btn-plano" onclick="hojaRegistro(\''+DIAS[iAyer]+'\')">'+DIAS[iAyer]+' quedó sin apuntar</button>';
+  }
+
+  const resto=DIAS.slice(indiceHoy()+1,indiceHoy()+4);
+  if(resto.length){
+    h+='<div class="tarjeta"><h2>Lo que viene</h2>';
+    resto.forEach(function(d){
+      const c=receta(DATOS.act.menu[d+'|Comida']), ce=receta(DATOS.act.menu[d+'|Cena']);
+      h+='<button class="hueco" onclick="verVista(\'semana\')">'+
+         '<span class="pastilla">'+d.slice(0,3)+'</span>'+
+         '<span class="nombre-plato" style="font-weight:600">'+esc([c?c.nombre:'', ce?ce.nombre:''].filter(Boolean).join(' · ')||'sin plan')+'</span>'+
+         '<span class="flecha">›</span></button>';
+    });
+    h+='</div>';
+  }
+  document.getElementById('v-hoy').innerHTML=h;
+}
+function lineasExtra(k){
+  let h='';
+  const s2=receta(S().segundo&&S().segundo[k]);
+  if(s2) h+='<div class="extra-plato"><span>y de segundo</span><b>'+esc(s2.nombre)+'</b></div>';
+  const ap=S().aparte&&S().aparte[k];
+  const ra=ap?receta(ap.id):null;
+  if(ap&&ra) h+='<div class="extra-plato"><span>'+esc(ap.p)+' come</span><b>'+esc(ra.nombre)+'</b></div>';
+  return h;
+}
+function sentarRapido(dia,comida,valor){
+  sentar(dia,comida,valor);
+  if(valor==='bien') pintar();
+}
+
+function nuevoReg(){ return {q:'plan',ing:[],gr:[],txt:'',s:'',sint:[],tarde:false}; }
+function ingredientesSugeridos(){
+  return (DATOS.rapidos&&DATOS.rapidos.length)?DATOS.rapidos:rapidosPorDefecto();
+}
+function etiquetaComido(k){
+  const v=getReg(k); if(!v) return '';
+  const r=receta(S().menu[k]);
+  if(v.q==='no') return 'no comí';
+  if(v.q==='plan') return r?r.nombre:'';
+  return (v.ing&&v.ing.length)?v.ing.join(', '):(v.txt||'otra cosa');
+}
+
+function hojaRegistro(dia){
+  const planificadas=COMIDAS.filter(function(c){return S().menu[dia+'|'+c];});
+  let h='<h2>¿Qué comí el '+dia.toLowerCase()+'?</h2>'+
+        '<p class="sub">Solo tuyo: esto no lo ve nadie más. Una pulsación por comida.</p>';
+  if(!planificadas.length) h+='<p class="vacio-msg">No había nada planificado ese día.</p>';
+  planificadas.forEach(function(comida){
+    const k=dia+'|'+comida;
+    const r=receta(S().menu[k]);
+    const v=getReg(k);
+    const igual = v && v.q==='plan';
+    const otro = v && v.q==='otro';
+    const no = v && v.q==='no';
+    h+='<div class="editor"><div class="editor-cab"><b>'+comida+' · '+esc(r.nombre)+'</b></div>'+
+       '<div class="par">'+
+       '<button class="btn '+(igual?'btn-2':'btn-plano')+'" style="margin:0" onclick="registrar(\''+dia+'\',\''+comida+'\',\'igual\')">El menú</button>'+
+       '<button class="btn '+(otro?'btn-2':'btn-plano')+'" style="margin:0" onclick="hojaRegistroDetalle(\''+dia+'\',\''+comida+'\')">Otra cosa</button>'+
+       '<button class="btn '+(no?'btn-2':'btn-plano')+'" style="margin:0" onclick="registrar(\''+dia+'\',\''+comida+'\',\'no\')">No comí</button>'+
+       '</div>';
+    if(v && v.q!=='no'){
+      h+='<div style="margin-top:12px"><p class="pista" style="margin:0 0 6px">'+esc(etiquetaComido(k))+' · ¿cómo te sentó?</p><div class="par">';
+      [['bien','Bien'],['regular','Regular'],['mal','Mal']].forEach(function(x){
+        h+='<button class="btn '+(v.s===x[0]?'btn-2':'btn-plano')+'" style="margin:0;font-size:14px;padding:11px" onclick="sentar(\''+dia+'\',\''+comida+'\',\''+x[0]+'\')">'+x[1]+'</button>';
+      });
+      h+='</div>';
+      if(v.sint&&v.sint.length) h+='<p class="pista" style="margin:6px 0 0">'+esc(v.sint.join(' · '))+(v.tarde?' · cena tardía':'')+'</p>';
+      h+='</div>';
+    }
+    h+='</div>';
+  });
+  h+='<button class="btn btn-plano" onclick="cerrarHoja()">Cerrar</button>';
+  abrirHoja(h);
+}
+
+function registrar(dia,comida,tipo){
+  const k=dia+'|'+comida;
+  const previo=getReg(k);
+  const v=nuevoReg();
+  v.q = tipo==='igual' ? 'plan' : 'no';
+  if(previo){ v.s=previo.s||''; v.sint=previo.sint||[]; }
+  setReg(k,v);
+  hojaRegistro(dia); pintar();
+}
+
+function sentar(dia,comida,valor){
+  const k=dia+'|'+comida;
+  let v=getReg(k); if(!v){ v=nuevoReg(); }
+  v.s=valor; setReg(k,v);
+  if(valor==='bien'){ v.sint=[]; setReg(k,v); anotarSensacion(dia,comida); hojaRegistro(dia); pintar(); return; }
+  // se guarda ya, aunque no llegue a detallar los síntomas
+  anotarSensacion(dia,comida);
+  hojaSintomas(dia,comida);
+}
+
+function hojaSintomas(dia,comida){
+  const k=dia+'|'+comida;
+  const v=getReg(k); if(!v) return;
+  let h='<h2>¿Cómo te sentó?</h2><p class="sub">Opcional. Marca lo que notaste, si quieres.</p><div class="filtros">';
+  SINTOMAS.forEach(function(s){
+    h+='<button class="filtro'+((v.sint||[]).indexOf(s)!==-1?' sel':'')+'" onclick="alternarSintoma(\''+dia+'\',\''+comida+'\',\''+attr(s)+'\')">'+s+'</button>';
+  });
+  h+='</div>';
+  if(comida==='Cena'){
+    h+='<button class="btn '+(v.tarde?'btn-2':'btn-plano')+'" onclick="alternarTarde(\''+dia+'\',\''+comida+'\')">Cené tarde o me acosté pronto después</button>'+
+       '<p class="pista">Las guías recomiendan no tumbarse hasta unas tres horas después de comer. Guardarlo ayuda a distinguir si fue el plato o el horario.</p>';
+  }
+  h+='<button class="btn btn-1" onclick="anotarSensacion(\''+dia+'\',\''+comida+'\');hojaRegistro(\''+dia+'\')">Guardar</button>';
+  abrirHoja(h);
+}
+function alternarSintoma(dia,comida,s){
+  const k=dia+'|'+comida, v=getReg(k); if(!v) return;
+  v.sint=v.sint||[];
+  const i=v.sint.indexOf(s);
+  if(i===-1) v.sint.push(s); else v.sint.splice(i,1);
+  setReg(k,v); hojaSintomas(dia,comida);
+}
+function alternarTarde(dia,comida){
+  const k=dia+'|'+comida, v=getReg(k); if(!v) return;
+  v.tarde=!v.tarde; setReg(k,v); hojaSintomas(dia,comida);
+}
+function anotarSensacion(dia,comida){
+  const k=dia+'|'+comida;
+  const v=getReg(k); if(!v||!v.s) return;
+  const r=receta(S().menu[k]);
+  const propio = v.q==='plan';
+  LOCAL.sensaciones=LOCAL.sensaciones||[];
+  LOCAL.sensaciones=LOCAL.sensaciones.filter(function(x){return !(x.clave===k&&x.semana===DATOS.inicio);});
+  LOCAL.sensaciones.push({
+    ts:Date.now(), clave:k, semana:DATOS.inicio,
+    recetaId: propio&&r?r.id:null,
+    nombre: propio&&r?r.nombre:((v.ing&&v.ing.length)?v.ing.join(', '):(v.txt||'fuera del menú')),
+    ing: propio&&r?r.ingredientes:(v.ing||[]),
+    s:v.s, sint:v.sint||[], tarde:!!v.tarde
+  });
+  if(LOCAL.sensaciones.length>400) LOCAL.sensaciones=LOCAL.sensaciones.slice(-400);
+  guardarLocal();
+}
+
+function hojaRegistroDetalle(dia,comida){
+  const k=dia+'|'+comida;
+  const r=receta(S().menu[k]);
+  let v=getReg(k); if(!v){ v=nuevoReg(); }
+  if(v.q!=='otro'){ v.q='otro'; v.ing=v.ing||[]; v.gr=v.gr||[]; }
+  setReg(k,v);
+  let h='<h2>'+comida+' del '+dia.toLowerCase()+'</h2><p class="sub">Lo previsto era '+esc(r.nombre)+'.</p>';
+  h+='<p class="etiqueta">¿Qué comí?</p><p class="pista">Toca lo que más se parezca. La lista se edita en Ajustes.</p><div class="filtros">';
+  ingredientesSugeridos().forEach(function(x){
+    h+='<button class="filtro'+((v.ing||[]).indexOf(x)!==-1?' sel':'')+'" onclick="alternarIng(\''+dia+'\',\''+comida+'\',\''+attr(x)+'\')">'+esc(x)+'</button>';
+  });
+  h+='</div><p class="etiqueta">Grupos</p><p class="pista">Para que cuente en tu seguimiento.</p><div class="filtros">';
+  DATOS.gruposDef.forEach(function(g){
+    h+='<button class="filtro'+((v.gr||[]).indexOf(g.n)!==-1?' sel':'')+'" onclick="alternarGrupoReg(\''+dia+'\',\''+comida+'\',\''+attr(g.n)+'\')">'+esc(g.n)+'</button>';
+  });
+  h+='</div><input class="campo" placeholder="Detalle, opcional" value="'+esc(v.txt||'')+'" onchange="regTexto(\''+dia+'\',\''+comida+'\',this.value)">';
+  h+='<button class="btn btn-1" onclick="hojaRegistro(\''+dia+'\')">Listo</button>';
+  abrirHoja(h);
+}
+function alternarIng(dia,comida,x){
+  const k=dia+'|'+comida, v=getReg(k); if(!v) return;
+  v.ing=v.ing||[];
+  const i=v.ing.indexOf(x);
+  if(i===-1) v.ing.push(x); else v.ing.splice(i,1);
+  setReg(k,v); hojaRegistroDetalle(dia,comida); pintar();
+}
+function alternarGrupoReg(dia,comida,g){
+  const k=dia+'|'+comida, v=getReg(k); if(!v) return;
+  v.gr=v.gr||[];
+  const i=v.gr.indexOf(g);
+  if(i===-1) v.gr.push(g); else v.gr.splice(i,1);
+  setReg(k,v); hojaRegistroDetalle(dia,comida); pintar();
+}
+function regTexto(dia,comida,t){
+  const k=dia+'|'+comida, v=getReg(k); if(!v) return;
+  v.txt=String(t||'').trim(); setReg(k,v); pintar();
+}
+
+/* ---------- SEMANA ---------- */
+function pintarSemana(){
+  const iHoy=indiceHoy();
+  const prox = SEMANA_VISTA==='prox';
+  let h='<div class="seg">'+
+        '<button class="'+(!prox?'sel':'')+'" onclick="SEMANA_VISTA=\'act\';pintar()">Esta semana</button>'+
+        '<button class="'+(prox?'sel':'')+'" onclick="SEMANA_VISTA=\'prox\';pintar()">La que viene</button></div>';
+  if(LOCAL.rejilla){
+    h+='<div class="seg">'+
+       '<button class="'+(!COMPACTA?'sel':'')+'" onclick="COMPACTA=false;pintar()">Día a día</button>'+
+       '<button class="'+(COMPACTA?'sel':'')+'" onclick="COMPACTA=true;pintar()">Semana entera</button></div>';
+  } else COMPACTA=false;
+  const faltan=faltasPlan(S());
+  {
+    h+='<div class="obj" style="margin-bottom:12px"><div class="obj-cab"><b>Cómo va el plan</b><span>'+cumplidosPlan(S())+' de '+objsTodos().length+'</span></div>'+
+       (faltan.length?'<div class="marcas" style="margin-top:10px">'+faltan.map(function(f){
+          return '<span class="marca" style="background:var(--limon);color:var(--limon-t)">'+esc(f.txt)+'</span>';}).join('')+'</div>'
+        :'<p style="margin:6px 0 0">Cuadra con lo que os habéis propuesto.</p>')+'</div>';
+  }
+  if(prox) h+='<div class="obj"><p>Esto es la semana que viene. El domingo pasa sola a ser la de ahora, con las comidas fijas puestas.</p></div>';
+  if(COMPACTA) h+=rejillaSemana();
+  else {
+    if(!prox && iHoy>0) h+='<button class="btn btn-plano" onclick="VER_PASADOS=!VER_PASADOS;pintar()">'+
+      (VER_PASADOS?'Ocultar los días pasados':'Ver los '+iHoy+' días pasados')+'</button>';
+    DATOS.dias.forEach(function(dia,i){
+      if(!prox && i<iHoy && !VER_PASADOS) return;
+      h+='<div class="tarjeta dia'+(!prox&&i===iHoy?' hoy':'')+'"><span class="cinta">'+dia+'</span>';
+      DATOS.comidas.forEach(function(comida){
+        const k=dia+'|'+comida;
+        const r=receta(S().menu[k]);
+        const destino=MOVIENDO && !(MOVIENDO.dia===dia&&MOVIENDO.comida===comida);
+        h+='<button class="hueco'+(destino?' destino':'')+'" onclick="tocarHueco(\''+dia+'\',\''+comida+'\')">'+
+           '<span class="pastilla p-'+comida.toLowerCase()+'">'+comida+'</span>'+
+           (r?'<span class="nombre-plato">'+esc(r.nombre)+'</span>'+
+              (S().guarnicion[k]?'<span class="mini verde">+V</span>':'')+
+              (S().doble[k]?'<span class="mini gris">DOBLE</span>':'')+
+              (S().sobras[k]?'<span class="mini gris">SOBRAS</span>':'')+
+              (S().fijos[k]?'<span class="mini">FIJO</span>':'')+
+              (S().cocinas[k]?'<span class="avatar'+(S().cocinas[k]===PERSONAS[1]?' b':'')+'">'+S().cocinas[k].charAt(0)+'</span>':'')+
+              '<span class="flecha">›</span>'
+             :'<span class="nombre-plato vacio">'+(destino?'Poner aquí':'Agregar comida')+'</span>')+
+           '</button>'+(r?lineasExtra(k):'');
+      });
+      h+='<button class="hueco" style="justify-content:flex-end;color:var(--gris);font-size:13px;font-weight:700" onclick="hojaCopiarDia(\''+dia+'\')">Copiar este día ›</button>';
+      h+='</div>';
+    });
+  }
+  h+='<div style="height:14px"></div>';
+  document.getElementById('v-semana').innerHTML=h;
+}
+function rejillaSemana(){
+  const iHoy=indiceHoy();
+  let h='<div class="rejilla"><div class="cabecera-r"><span>Desay.</span><span>Comida</span><span>Cena</span></div>';
+  DATOS.dias.forEach(function(dia,i){
+    h+='<div class="fila-r'+(i===iHoy?' hoy':'')+'"><span class="dia-r">'+dia.slice(0,2)+'</span>';
+    DATOS.comidas.forEach(function(comida){
+      const r=receta(S().menu[dia+'|'+comida]);
+      const g=r&&r.grupos&&r.grupos.length?r.grupos[0]:null;
+      h+='<button class="celda" onclick="tocarHueco(\''+dia+'\',\''+comida+'\')">'+
+         '<span class="pto" style="background:'+(g?colorGrupo(g):'var(--borde)')+'"></span>'+
+         (r?esc(r.nombre.length>15?r.nombre.slice(0,14)+'…':r.nombre):'')+'</button>';
+    });
+    h+='</div>';
+  });
+  return h+'</div>';
+}
+function hojaCopiarDia(origen){
+  let h='<h2>Copiar el '+origen.toLowerCase()+'</h2><p class="sub">Se copian los tres huecos al día que elijas, dentro de la semana que estás viendo.</p>';
+  DIAS.filter(function(d){return d!==origen;}).forEach(function(d){
+    h+='<button class="btn btn-plano" onclick="copiarDia(\''+origen+'\',\''+d+'\')">'+d+'</button>';
+  });
+  h+='<button class="btn btn-plano" onclick="cerrarHoja()">Cancelar</button>';
+  abrirHoja(h);
+}
+function copiarDia(origen,destino){
+  puntoDeVuelta('Copiado el '+origen.toLowerCase()+' al '+destino.toLowerCase());
+  COMIDAS.forEach(function(c){
+    const a=origen+'|'+c, b=destino+'|'+c;
+    ['menu','segundo','aparte','cocinas','sobras','guarnicion','doble'].forEach(function(campo){ S()[campo][b]=S()[campo][a]; });
+    delReg(b);
+  });
+  cerrarHoja(); pintar();
+}
+function anteriorConPlato(dia,comida){
+  const orden=[];
+  DATOS.dias.forEach(function(d){DATOS.comidas.forEach(function(c){orden.push(d+'|'+c);});});
+  const i=orden.indexOf(dia+'|'+comida);
+  for(let j=i-1;j>=0;j--) if(S().menu[orden[j]]) return {clave:orden[j],id:S().menu[orden[j]],doble:S().doble[orden[j]]};
+  return null;
+}
+function tocarHueco(dia,comida){
+  if(MOVIENDO){
+    if(MOVIENDO.dia===dia&&MOVIENDO.comida===comida){MOVIENDO=null;pintar();return;}
+    const a=MOVIENDO.dia+'|'+MOVIENDO.comida, b=dia+'|'+comida;
+    ['menu','cocinas','sobras','guarnicion','doble'].forEach(function(c){
+      const t=S()[c][b]; S()[c][b]=S()[c][a]; S()[c][a]=t;
+    });
+    moverReg(a,b);
+    MOVIENDO=null; pintar(); return;
+  }
+  const id=S().menu[dia+'|'+comida];
+  if(id) hojaPlato(dia,comida,id); else hojaElegir(dia,comida);
+}
+function pintarBarraMover(){
+  const p=document.querySelector('.moviendo'); if(p) p.remove();
+  if(!MOVIENDO) return;
+  const r=receta(S().menu[MOVIENDO.dia+'|'+MOVIENDO.comida]);
+  const d=document.createElement('div'); d.className='moviendo';
+  d.innerHTML='<strong>Moviendo '+esc(r?r.nombre:'')+'</strong><button onclick="MOVIENDO=null;pintar()">Cancelar</button>';
+  document.body.appendChild(d);
+}
+
+/* ---------- DIETA ---------- */
+function clavesPrincipales(){
+  const l=[];
+  DATOS.dias.forEach(function(d){['Comida','Cena'].forEach(function(m){l.push(d+'|'+m);});});
+  return l;
+}
+function platosDe(k,sem){
+  const s=sem||DATOS.act;
+  const ap=s.aparte&&s.aparte[k];
+  const base = (ap && ap.p===yo() && ap.id) ? ap.id : s.menu[k];
+  const l=[receta(base)];
+  if(s.segundo&&s.segundo[k]) l.push(receta(s.segundo[k]));
+  return l.filter(Boolean);
+}
+function platoPlan(k,sem){
+  const s=sem||DATOS.act;
+  const l=platosDe(k,s);
+  if(!l.length) return {grupos:[],guar:false,hay:false};
+  let g=[];
+  l.forEach(function(r){ g=g.concat(r.grupos||[]); });
+  return {grupos:g, guar:s.guarnicion[k], hay:true};
+}
+function platoReal(k){
+  const v=getReg(k); if(!v||v.q==='no') return {grupos:[],guar:false,hay:false};
+  if(v.q==='plan') return platoPlan(k);
+  return {grupos:v.gr||[],guar:false,hay:true};
+}
+function cuentaCon(o,fn){
+  const mira=o.grupos.some(function(g){return /verdura/i.test(g);});
+  return clavesPrincipales().filter(function(k){
+    const d=fn(k);
+    if(!d.hay) return false;
+    if(d.grupos.some(function(g){return o.grupos.indexOf(g)!==-1;})) return true;
+    return mira && d.guar;
+  }).length;
+}
+function cuentaPlan(o,sem){ return cuentaCon(o,function(k){return platoPlan(k,sem);}); }
+function cuentaReal(o){ return cuentaCon(o,platoReal); }
+function cuenta(o){ return apunta() ? cuentaReal(o) : cuentaPlan(o,DATOS.act); }
+function objsMios(){ return LOCAL.objetivos||[]; }
+function objsTodos(){ return (DATOS.objetivos||[]).concat(objsMios()); }
+function esMio(id){ return objsMios().some(function(o){return o.id===id;}); }
+function objPorId(id){ return objsTodos().filter(function(o){return o.id===id;})[0]; }
+function variedadSemana(){
+  if(!apunta()) return variedadPlan(DATOS.act);
+  const set={};
+  clavesPrincipales().forEach(function(k){
+    const r=receta(DATOS.act.menu[k]);
+    const v=getReg(k); if(!v||v.q==='no') return;
+    if(v.q==='plan'){ if(r) r.ingredientes.forEach(function(i){set[norm(i)]=true;}); }
+    else (v.ing||[]).forEach(function(i){set[norm(i)]=true;});
+  });
+  return Object.keys(set).length;
+}
+function variedadPlan(sem){
+  const s=sem||DATOS.act;
+  const set={};
+  clavesPrincipales().forEach(function(k){
+    const r=receta(s.menu[k]);
+    if(r) r.ingredientes.forEach(function(i){set[norm(i)]=true;});
+  });
+  return Object.keys(set).length;
+}
+function cumplidosAhora(){
+  let n=0;
+  objsTodos().forEach(function(o){
+    const v=cuenta(o);
+    if(o.tipo==='min'?v>=o.obj:v<=o.obj) n++;
+  });
+  return n;
+}
+function cumplidosPlan(sem){
+  let n=0;
+  objsTodos().forEach(function(o){
+    const v=cuentaPlan(o,sem);
+    if(o.tipo==='min'?v>=o.obj:v<=o.obj) n++;
+  });
+  return n;
+}
+function faltasPlan(sem){
+  return objsTodos().map(function(o){
+    const v=cuentaPlan(o,sem);
+    const bien=o.tipo==='min'?v>=o.obj:v<=o.obj;
+    if(bien) return null;
+    return {o:o, txt: o.tipo==='min' ? 'faltan '+(o.obj-v)+' de '+o.nombre.toLowerCase() : (v-o.obj)+' de más de '+o.nombre.toLowerCase()};
+  }).filter(Boolean);
+}
+
+let RANGO='sem', METRICA='cumplidos';
+function metricas(){
+  return [{id:'cumplidos',n:'Objetivos cumplidos'},{id:'variedad',n:'Variedad'}]
+    .concat(objsTodos().map(function(o){return {id:o.nombre,n:o.nombre};}));
+}
+function valorHist(x,id){
+  if(id==='cumplidos') return x.cumplidos||0;
+  if(id==='variedad') return x.variedad||0;
+  return (x.plan&&x.plan[id])||0;
+}
+function serieSeguimiento(){
+  const hist=(DATOS.historial||[]).slice();
+  if(RANGO==='sem'){
+    return hist.slice(-8).map(function(x){ return {etq:x.nombre, v:valorHist(x,METRICA)}; });
+  }
+  const meses={};
+  hist.forEach(function(x){
+    const f=new Date(x.ts||Date.now());
+    const k=f.getFullYear()+'-'+f.getMonth();
+    if(!meses[k]) meses[k]={etq:MESES[f.getMonth()].slice(0,3), suma:0, n:0, orden:f.getFullYear()*12+f.getMonth()};
+    meses[k].suma+=valorHist(x,METRICA); meses[k].n++;
+  });
+  return Object.keys(meses).map(function(k){return meses[k];})
+    .sort(function(a,b){return a.orden-b.orden;}).slice(-6)
+    .map(function(m){ return {etq:m.etq, v:Math.round(m.suma/m.n*10)/10}; });
+}
+function objetivoDe(id){
+  const o=objsTodos().filter(function(x){return x.nombre===id;})[0];
+  if(o) return {v:o.obj, tipo:o.tipo};
+  if(id==='variedad') return {v:DATOS.variedad, tipo:'min'};
+  if(id==='cumplidos') return {v:objsTodos().length, tipo:'min'};
+  return null;
+}
+function bloqueSeguimiento(){
+  const serie=serieSeguimiento();
+  const meta=objetivoDe(METRICA);
+  const max=Math.max.apply(null,serie.map(function(x){return x.v;}).concat([meta?meta.v:1,1]));
+  const media=serie.length?Math.round(serie.reduce(function(a,b){return a+b.v;},0)/serie.length*10)/10:0;
+  const ultimo=serie.length?serie[serie.length-1].v:0;
+  const previos=serie.slice(0,-1);
+  const mprev=previos.length?previos.reduce(function(a,b){return a+b.v;},0)/previos.length:null;
+  let frase='Aún no hay suficiente para comparar.';
+  if(mprev!==null){
+    const d=ultimo-mprev;
+    const mejor = meta && meta.tipo==='max' ? d<0 : d>0;
+    frase = Math.abs(d)<0.4 ? 'Vais como siempre.' : (mejor?'Mejor que vuestra media.':'Por debajo de vuestra media.');
+  }
+  let h='<div class="obj"><div class="obj-cab"><b>Seguimiento</b><span>media '+media+'</span></div>'+
+        '<div class="seg" style="margin:12px 0 6px;box-shadow:none;background:var(--fondo)">'+
+        '<button class="'+(RANGO==='sem'?'sel':'')+'" onclick="RANGO=\'sem\';pintar()">Por semana</button>'+
+        '<button class="'+(RANGO==='mes'?'sel':'')+'" onclick="RANGO=\'mes\';pintar()">Por mes</button></div>'+
+        '<div class="filtros" style="margin-bottom:10px">';
+  metricas().forEach(function(m){
+    h+='<button class="filtro'+(METRICA===m.id?' sel':'')+'" onclick="METRICA=\''+esc(m.id)+'\';pintar()">'+esc(m.n)+'</button>';
+  });
+  h+='</div>';
+  if(!serie.length) h+='<p class="vacio-msg">Todavía no hay semanas cerradas.</p>';
+  else {
+    h+='<div class="grafica">';
+    serie.forEach(function(x,i){
+      const alt=Math.max(4,Math.round(x.v/max*100));
+      h+='<div class="col"><span class="vv">'+x.v+'</span><div class="bb'+(i===serie.length-1?' act':'')+'" style="height:'+alt+'%"></div><span class="ee">'+esc(x.etq)+'</span></div>';
+    });
+    h+='</div>';
+    if(meta) h+='<p class="pista" style="margin:8px 0 0">Vuestro objetivo: '+(meta.tipo==='min'?'mínimo ':'máximo ')+meta.v+' por semana.</p>';
+    h+='<p style="margin:6px 0 0">'+frase+'</p>';
+  }
+  return h+'</div>';
+}
+function sensDe(desdeDias){
+  const lim = Date.now()-(desdeDias||90)*DIA_MS;
+  return (LOCAL.sensaciones||[]).filter(function(x){return x.ts>=lim;});
+}
+function tolerancia(recetaId){
+  const l=(LOCAL.sensaciones||[]).filter(function(x){return x.recetaId===recetaId;});
+  if(!l.length) return null;
+  const c={bien:0,regular:0,mal:0};
+  l.forEach(function(x){ c[x.s]=(c[x.s]||0)+1; });
+  return c;
+}
+function resumenTolerancia(){
+  const l=sensDe(90);
+  const c={bien:0,regular:0,mal:0};
+  l.forEach(function(x){ c[x.s]=(c[x.s]||0)+1; });
+  const platos={};
+  l.forEach(function(x){
+    const n=x.nombre||'sin nombre';
+    if(!platos[n]) platos[n]={n:n,total:0,malo:0,id:x.recetaId};
+    platos[n].total++; if(x.s!=='bien') platos[n].malo++;
+  });
+  const flojos=Object.keys(platos).map(function(k){return platos[k];})
+    .filter(function(p){return p.total>=2 && p.malo/p.total>=0.5;})
+    .sort(function(a,b){return (b.malo/b.total)-(a.malo/a.total)||b.total-a.total;});
+  const ing={};
+  l.forEach(function(x){
+    (x.ing||[]).forEach(function(i){
+      const n=norm(i); if(!n) return;
+      if(!ing[n]) ing[n]={n:i,total:0,malo:0};
+      ing[n].total++; if(x.s!=='bien') ing[n].malo++;
+    });
+  });
+  const ingFlojos=Object.keys(ing).map(function(k){return ing[k];})
+    .filter(function(p){return p.total>=3 && p.malo/p.total>=0.6;})
+    .sort(function(a,b){return (b.malo/b.total)-(a.malo/a.total);}).slice(0,4);
+  const sint={};
+  l.forEach(function(x){(x.sint||[]).forEach(function(s){sint[s]=(sint[s]||0)+1;});});
+  const sintOrden=Object.keys(sint).sort(function(a,b){return sint[b]-sint[a];}).slice(0,3)
+    .map(function(s){return s+' ('+sint[s]+')';});
+  const tardes=l.filter(function(x){return x.tarde;});
+  const tardeMal=tardes.filter(function(x){return x.s!=='bien';}).length;
+  return {c:c,total:l.length,flojos:flojos,ing:ingFlojos,sint:sintOrden,tardes:tardes.length,tardeMal:tardeMal};
+}
+function hojaTolerancia(){
+  const r=resumenTolerancia();
+  let h='<h2>Cómo te sienta</h2><p class="sub">Últimos tres meses · '+r.total+' comidas anotadas.</p>';
+  if(!r.total){ h+='<p class="vacio-msg">Todavía no hay nada anotado. Se llena al apuntar los días.</p>'; }
+  else {
+    h+='<div class="editor"><div class="editor-cab"><b>Reparto</b></div>'+
+       '<p class="pista" style="margin:0">Bien '+r.c.bien+' · Regular '+r.c.regular+' · Mal '+r.c.mal+'</p></div>';
+    if(r.sint.length) h+='<div class="editor"><div class="editor-cab"><b>Lo que más notas</b></div><p class="pista" style="margin:0">'+esc(r.sint.join(' · '))+'</p></div>';
+    if(r.flojos.length){
+      h+='<div class="editor"><div class="editor-cab"><b>Platos que suelen sentar peor</b></div>';
+      r.flojos.slice(0,5).forEach(function(p){
+        h+='<p class="pista" style="margin:0 0 4px">'+esc(p.n)+': '+p.malo+' de '+p.total+' veces regular o mal</p>';
+      });
+      h+='</div>';
+    }
+    if(r.ing.length){
+      h+='<div class="editor"><div class="editor-cab"><b>Ingredientes que se repiten</b></div>';
+      r.ing.forEach(function(p){
+        h+='<p class="pista" style="margin:0 0 4px">'+esc(p.n)+': en '+p.malo+' de '+p.total+' comidas que no sentaron bien</p>';
+      });
+      h+='<p class="pista" style="margin:8px 0 0">Es una coincidencia en vuestros datos, no una causa demostrada.</p></div>';
+    }
+    if(r.tardes) h+='<div class="editor"><div class="editor-cab"><b>Cenas tardías</b></div><p class="pista" style="margin:0">'+r.tardeMal+' de '+r.tardes+' cenas tardías no te sentaron bien.</p></div>';
+    h+='<div class="editor"><p class="pista" style="margin:0">Esto es un diario de síntomas, no un diagnóstico. Sirve para llevarlo a la consulta: las guías actuales recomiendan identificar los desencadenantes de cada persona en vez de retirar alimentos por lista, y esa decisión es de su médico o dietista.</p></div>';
+  }
+  h+='<button class="btn btn-plano" onclick="cerrarHoja()">Cerrar</button>';
+  abrirHoja(h);
+}
+
+function anillo(v,meta,tipo){
+  const pct = meta ? Math.min(1.4, v/meta) : 0;
+  const bien = tipo==='min' ? v>=meta : v<=meta;
+  const R=26, C=2*Math.PI*R;
+  const trazo = Math.min(1,pct)*C;
+  const color = bien?'var(--menta-s)':(tipo==='min'?'var(--limon-s)':'var(--coral-s)');
+  return '<svg viewBox="0 0 64 64" class="anillo" aria-hidden="true">'+
+    '<circle cx="32" cy="32" r="'+R+'" stroke="var(--borde)" stroke-width="7" fill="none"/>'+
+    '<circle cx="32" cy="32" r="'+R+'" stroke="'+color+'" stroke-width="7" fill="none" stroke-linecap="round"'+
+    ' stroke-dasharray="'+trazo.toFixed(1)+' '+C.toFixed(1)+'" transform="rotate(-90 32 32)"/>'+
+    '<text x="32" y="36" text-anchor="middle" class="anillo-n">'+v+'</text></svg>';
+}
+function pintarDieta(){
+  const act=apunta();
+  let h='<p class="sub" style="margin-top:0">'+
+    (act ? 'Lo que has comido esta semana. Solo tuyo: no lo ve nadie más.'
+         : 'Según el menú de esta semana. Para contar lo que comes de verdad, enciende «Apuntar lo que como» en Ajustes.')+'</p>';
+
+  const total=clavesPrincipales().filter(function(k){return DATOS.act.menu[k];}).length;
+  const conf=clavesPrincipales().filter(function(k){return DATOS.act.menu[k]&&getReg(k);}).length;
+  if(act && conf<total) h+='<div class="obj"><p>Llevái' + 's ' + '<b>'+conf+' de '+total+'</b> comidas apuntadas. Lo que veis abajo cuenta solo esas.</p></div>';
+
+  h+='<div class="anillos">';
+  objsTodos().forEach(function(o){
+    const v=cuenta(o);
+    const bien=o.tipo==='min'?v>=o.obj:v<=o.obj;
+    h+='<button class="celda-obj" onclick="hojaPorQue(\''+o.id+'\')">'+anillo(v,o.obj,o.tipo)+
+       '<b>'+esc(o.nombre)+'</b><span>'+(o.tipo==='min'?'de '+o.obj:'máx. '+o.obj)+' · '+(bien?'bien':'ojo')+'</span></button>';
+  });
+  const va=variedadSemana();
+  h+='<button class="celda-obj" onclick="hojaVariedad()">'+anillo(va,DATOS.variedad,'min')+
+     '<b>Variedad</b><span>de '+DATOS.variedad+' · '+(va>=DATOS.variedad?'bien':'a medias')+'</span></button></div>';
+
+  if(act){
+    const rt=resumenTolerancia();
+    h+='<div class="obj"><div class="obj-cab"><b>Cómo te sienta</b></div><p>Los platos que te caen peor y lo que más notas.</p>'+
+       '<button class="hueco" onclick="hojaTolerancia()">'+
+       '<span class="nombre-plato">Ver el detalle</span>'+
+       '<span class="mini gris">'+(rt.total?('bien '+rt.c.bien+' · reg '+rt.c.regular+' · mal '+rt.c.mal):'sin datos')+'</span>'+
+       '<span class="flecha">›</span></button></div>';
+  }
+
+  h+=bloqueSeguimiento();
+
+  if(DATOS.historial.length){
+    h+='<div class="obj"><div class="obj-cab"><b>Semanas anteriores</b></div>';
+    DATOS.historial.slice(-4).reverse().forEach(function(x,i){
+      h+='<button class="hueco" onclick="hojaSemanaVieja('+(DATOS.historial.length-1-i)+')">'+
+         '<span class="nombre-plato">'+esc(x.nombre)+'</span>'+
+         '<span class="mini gris">'+x.cumplidos+' de '+(DATOS.objetivos||[]).length+'</span><span class="flecha">›</span></button>';
+    });
+    h+='</div>';
+  }
+
+  h+='<button class="btn btn-plano" onclick="hojaObjetivos()">Cambiar objetivos</button>'+
+     '<p class="sub">Números orientativos, de la AESAN y de EAT-Lancet. No sustituyen a vuestro médico ni a un dietista.</p><div style="height:14px"></div>';
+  document.getElementById('v-dieta').innerHTML=h;
+}
+function hojaVariedad(){
+  abrirHoja('<h2>Variedad</h2><p class="sub">Ingredientes distintos en lo que habéis comido esta semana: '+variedadSemana()+' de '+DATOS.variedad+'.</p>'+
+    '<div class="texto-receta" style="max-height:none">El objetivo de 30 viene de los estudios de diversidad vegetal y microbiota. Aquí cuenta cualquier ingrediente, no solo plantas, así que es una cuenta generosa. Se cambia desde Cambiar objetivos.</div>'+
+    '<button class="btn btn-plano" onclick="cerrarHoja()">Cerrar</button>');
+}
+
+/* ---------- DESPENSA ---------- */
+function enLista(x){ return (DATOS.compra||[]).some(function(i){return norm(i.n)===norm(x);}); }
+function tenemos(x){ return enCasa().some(function(a){return norm(a)===norm(x);}); }
+function faltanDelMenu(){
+  const set={};
+  clavesPrincipales().forEach(function(k){
+    const rs=[receta(DATOS.act.menu[k]), receta(DATOS.act.segundo&&DATOS.act.segundo[k]),
+              receta(DATOS.act.aparte&&DATOS.act.aparte[k]?DATOS.act.aparte[k].id:'')].filter(Boolean);
+    rs.forEach(function(r){
+      r.ingredientes.forEach(function(i){
+        if(enCasa().some(function(a){return coincide(i,a);})) return;
+        if(enLista(i)) return;
+        set[norm(i)]=i.charAt(0).toUpperCase()+i.slice(1);
+      });
+    });
+  });
+  return Object.keys(set).map(function(k){return set[k];});
+}
+function frecuentes(){
+  const f=DATOS.freq||{};
+  let l=Object.keys(f).sort(function(a,b){return f[b]-f[a];});
+  if(l.length<8){
+    const cuenta={};
+    DATOS.recetas.forEach(function(r){ r.ingredientes.forEach(function(i){ cuenta[norm(i)]=(cuenta[norm(i)]||0)+1; }); });
+    l=l.concat(Object.keys(cuenta).sort(function(a,b){return cuenta[b]-cuenta[a];}));
+  }
+  const vistos={};
+  return l.filter(function(x){
+    if(vistos[x]||tenemos(x)||enLista(x)) return false;
+    vistos[x]=true; return true;
+  }).slice(0,10).map(function(x){ return x.charAt(0).toUpperCase()+x.slice(1); });
+}
+function addCompra(nombre,auto){
+  nombre=String(nombre||'').trim(); if(!nombre) return;
+  if(enLista(nombre)){ aviso(nombre+' ya está en la lista.'); return; }
+  DATOS.compra=DATOS.compra||[];
+  DATOS.compra.push({id:'c'+Date.now()+Math.floor(Math.random()*999),n:nombre,auto:!!auto});
+  const ya=dondeEsta(nombre);
+  pintar();
+  if(!auto && ya>=0) hojaQueda(nombre,ya);
+}
+function hojaQueda(nombre,idx){
+  abrirHoja('<h2>'+esc(nombre)+'</h2><p class="sub">Lo tenéis en '+esc(DATOS.sitios[idx].n.toLowerCase())+'. ¿Queda algo?</p>'+
+    '<button class="btn btn-2" onclick="cerrarHoja()">Sí, queda algo</button>'+
+    '<button class="btn btn-1" onclick="seAcabo(\''+attr(nombre)+'\','+idx+')">No, se ha acabado</button>'+
+    '<p class="pista" style="margin:10px 2px 0">Si se ha acabado lo saco de '+esc(DATOS.sitios[idx].n.toLowerCase())+' y se queda solo en la lista.</p>');
+}
+function seAcabo(nombre,idx){
+  DATOS.destinos=DATOS.destinos||{}; DATOS.destinos[norm(nombre)]=idx;
+  DATOS.sitios[idx].items=DATOS.sitios[idx].items.filter(function(y){return norm(y)!==norm(nombre);});
+  cerrarHoja(); pintar(); aviso(nombre+' fuera de '+DATOS.sitios[idx].n.toLowerCase()+'.');
+}
+function sugerirProducto(txt){
+  const cont=document.getElementById('sug-prod'); if(!cont) return;
+  const q=norm(txt||'');
+  if(q.length<2){ cont.innerHTML=''; return; }
+  const l=todosProductos().filter(function(p){ return !p.lista && p.k.indexOf(q)!==-1; }).slice(0,6);
+  const exacto=l.some(function(p){ return p.k===q; });
+  let h='';
+  l.forEach(function(p){
+    h+='<button class="chip'+(p.casa?' t':'')+'" onclick="addDesdeSugerencia(\''+attr(p.n)+'\')">'+esc(p.n)+
+       (p.casa?' · en casa':'')+'</button>';
+  });
+  if(!exacto && txt.trim()) h+='<button class="chip mas" onclick="addCompraCampo()">Añadir «'+esc(txt.trim())+'» tal cual</button>';
+  cont.innerHTML=h;
+}
+function addDesdeSugerencia(n){
+  const c=document.getElementById('compra-txt'); if(c) c.value='';
+  const s=document.getElementById('sug-prod'); if(s) s.innerHTML='';
+  addCompra(n,false);
+}
+function addCompraCampo(){
+  const c=document.getElementById('compra-txt'); if(!c) return;
+  const t=c.value.trim(); if(!t){aviso('Escribe o dicta un producto.');return;}
+  t.split(/[,\n]/).map(function(s){return s.trim();}).filter(Boolean).forEach(function(x){addCompra(x,false);});
+  c.value='';
+}
+function addTodoElMenu(){
+  const f=faltanDelMenu(); if(!f.length){aviso('No falta nada del menú.');return;}
+  puntoDeVuelta('Añadidos '+f.length+' del menú');
+  f.forEach(function(x){addCompra(x,true);});
+  aviso(f.length+' cosas a la lista.');
+}
+function quitarCompra(id){
+  const it=(DATOS.compra||[]).filter(function(x){return x.id===id;})[0];
+  puntoDeVuelta('Quitado '+(it?it.n:'el producto'));
+  DATOS.compra=DATOS.compra.filter(function(x){return x.id!==id;});
+  pintar();
+}
+function dondeEsta(x){
+  let idx=-1;
+  (DATOS.sitios||[]).forEach(function(s,i){
+    if((s.items||[]).some(function(y){return norm(y)===norm(x);})) idx=i;
+  });
+  return idx;
+}
+function comprado(id){
+  const it=(DATOS.compra||[]).filter(function(x){return x.id===id;})[0]; if(!it) return;
+  const ya=dondeEsta(it.n);
+  const d=(ya>=0)?ya:(DATOS.destinos||{})[norm(it.n)];
+  if(typeof d!=='number' || !DATOS.sitios[d]){ hojaDestino(id); return; }
+  puntoDeVuelta(it.n+' guardado');
+  if(ya<0) DATOS.sitios[d].items.push(it.n);
+  DATOS.freq=DATOS.freq||{}; DATOS.freq[norm(it.n)]=(DATOS.freq[norm(it.n)]||0)+1;
+  DATOS.compra=DATOS.compra.filter(function(x){return x.id!==id;});
+  pintar();
+  aviso(ya>=0 ? (it.n+', ya en '+DATOS.sitios[d].n.toLowerCase()+'.') : (it.n+' a '+DATOS.sitios[d].n.toLowerCase()+'.'));
+}
+function hojaDestino(id){
+  const it=(DATOS.compra||[]).filter(function(x){return x.id===id;})[0]; if(!it) return;
+  let h='<h2>'+esc(it.n)+'</h2><p class="sub">¿Dónde lo guardáis? Solo lo pregunto esta vez.</p>';
+  DATOS.sitios.forEach(function(s,i){
+    h+='<button class="btn btn-plano" onclick="fijarDestino(\''+id+'\','+i+')">'+esc(s.n)+'</button>';
+  });
+  h+='<button class="btn btn-plano" onclick="cerrarHoja()">Cancelar</button>';
+  abrirHoja(h);
+}
+function fijarDestino(id,idx){
+  const it=(DATOS.compra||[]).filter(function(x){return x.id===id;})[0]; if(!it) return;
+  DATOS.destinos=DATOS.destinos||{};
+  DATOS.destinos[norm(it.n)]=idx;
+  cerrarHoja(); comprado(id);
+}
+function cambiarDestinoDe(nombre){
+  let h='<h2>'+esc(nombre)+'</h2><p class="sub">A partir de ahora se guardará en…</p>';
+  DATOS.sitios.forEach(function(s,i){
+    h+='<button class="btn '+((DATOS.destinos||{})[norm(nombre)]===i?'btn-2':'btn-plano')+'" onclick="DATOS.destinos[\''+norm(nombre)+'\']='+i+';cerrarHoja();pintar();aviso(\'Apuntado.\')">'+esc(s.n)+'</button>';
+  });
+  h+='<button class="btn btn-plano" onclick="cerrarHoja()">Cerrar</button>';
+  abrirHoja(h);
+}
+function gastadoYALaLista(x){
+  puntoDeVuelta(x+' a la lista');
+  const idx=(DATOS.sitios||[]).reduce(function(a,s,i){return (s.items||[]).some(function(y){return norm(y)===norm(x);})?i:a;},-1);
+  if(idx>=0){ DATOS.destinos=DATOS.destinos||{}; DATOS.destinos[norm(x)]=idx; }
+  quitarNevera(x); addCompra(x,false);
+  cerrarHoja(); pintar(); aviso(x+' a la lista de la compra.');
+}
+function todosProductos(){
+  const f=DATOS.freq||{}, set={};
+  Object.keys(f).forEach(function(k){ set[k]=k; });
+  DATOS.recetas.forEach(function(r){ r.ingredientes.forEach(function(i){ set[norm(i)]=i; }); });
+  (DATOS.sitios||[]).forEach(function(s){ (s.items||[]).forEach(function(i){ set[norm(i)]=i; }); });
+  return Object.keys(set).map(function(k){
+    const n=set[k];
+    return { n: n.charAt(0).toUpperCase()+n.slice(1), k:k, veces: f[k]||0, casa: tenemos(n), lista: enLista(n) };
+  }).sort(function(a,b){ return b.veces-a.veces || a.n.localeCompare(b.n,'es'); });
+}
+let FILTRO_PROD='';
+function listaProductosHTML(){
+  const q=norm(FILTRO_PROD);
+  const l=todosProductos().filter(function(p){ return !q || p.k.indexOf(q)!==-1; });
+  if(!l.length) return '<p class="vacio-msg">Nada con ese nombre. Escríbelo arriba y añádelo tal cual.</p>'+
+    (FILTRO_PROD.trim()?'<button class="btn btn-1" onclick="addCompra(\''+attr(FILTRO_PROD.trim())+'\',false);cerrarHoja()">Añadir «'+esc(FILTRO_PROD.trim())+'»</button>':'');
+  let h='';
+  l.forEach(function(p){
+    const nota = p.lista ? 'ya en la lista' : (p.casa ? 'lo tenéis en casa' : (p.veces?'comprado '+p.veces+(p.veces===1?' vez':' veces'):'nunca comprado'));
+    h+='<button class="hueco" '+(p.lista?'disabled style="opacity:.45"':'onclick="addCompra(\''+attr(p.n)+'\',false);hojaTodosProductos()"')+'>'+
+       '<span style="flex:1;text-align:left"><span class="nombre-plato">'+esc(p.n)+'</span>'+
+       '<span class="pista" style="display:block;margin:0">'+nota+'</span></span>'+
+       (p.lista?'':'<span class="flecha">+</span>')+'</button>';
+  });
+  return h;
+}
+function hojaTodosProductos(){
+  const abierta=!!document.getElementById('lista-prod');
+  if(abierta){ document.getElementById('lista-prod').innerHTML=listaProductosHTML(); return; }
+  abrirHoja('<h2>Todos los productos</h2><p class="sub">Lo que habéis comprado alguna vez, lo que hay en casa y lo que piden vuestras recetas.</p>'+
+    '<input class="campo" id="filtro-prod" placeholder="Buscar" oninput="FILTRO_PROD=this.value;hojaTodosProductos()">'+
+    '<div id="lista-prod">'+listaProductosHTML()+'</div>'+
+    '<button class="btn btn-plano" onclick="FILTRO_PROD=\'\';cerrarHoja()">Cerrar</button>');
+}
+function hojaFaltaMenu(){
+  const f=faltanDelMenu();
+  let h='<h2>Lo pide el menú</h2><p class="sub">'+f.length+' cosas de las recetas de esta semana que no tenéis en casa.</p>';
+  if(!f.length) h+='<p class="vacio-msg">No falta nada.</p>';
+  f.forEach(function(x){
+    h+='<button class="hueco" onclick="addCompra(\''+attr(x)+'\',true);hojaFaltaMenu()">'+
+       '<span class="nombre-plato" style="flex:1;text-align:left">'+esc(x)+'</span><span class="flecha">+</span></button>';
+  });
+  if(f.length) h+='<button class="btn btn-1" onclick="addTodoElMenu();cerrarHoja()">Añadir las '+f.length+' a la lista</button>';
+  h+='<button class="btn btn-plano" onclick="cerrarHoja()">Cerrar</button>';
+  abrirHoja(h);
+}
+function pintarDespensa(){
+  const l=DATOS.compra||[], falta=faltanDelMenu();
+
+  let h='<div class="tarjeta"><div class="cab-lista"><h2 style="margin:0">Lista de la compra</h2>'+
+        (l.length?'<span class="cuenta">'+l.length+'</span>':'')+'</div>';
+  if(!l.length) h+='<p class="vacio-msg" style="padding:4px 2px 10px">Nada apuntado.</p>';
+  l.forEach(function(it){
+    const ya=dondeEsta(it.n);
+    const d=(ya>=0)?ya:(DATOS.destinos||{})[norm(it.n)];
+    const donde=(typeof d==='number'&&DATOS.sitios[d])?DATOS.sitios[d].n:'preguntará dónde';
+    const nota=(ya>=0?'ya hay en '+DATOS.sitios[ya].n.toLowerCase():donde)+(it.auto?' · del menú':'');
+    h+='<div class="hueco" style="gap:12px">'+
+       '<button class="casilla-c" onclick="comprado(\''+it.id+'\')" aria-label="Comprado"></button>'+
+       '<button style="flex:1;text-align:left;min-height:0" onclick="cambiarDestinoDe(\''+attr(it.n)+'\')">'+
+       '<span class="nombre-plato">'+esc(it.n)+'</span>'+
+       '<span class="pista" style="display:block;margin:0">'+esc(nota)+'</span></button>'+
+       '<button class="quitar" onclick="quitarCompra(\''+it.id+'\')">×</button></div>';
+  });
+  h+='<div class="par" style="margin:12px 0 4px">'+
+     '<input class="campo" style="margin:0" id="compra-txt" placeholder="Añadir (o dicta con el micro)" autocomplete="off"'+
+     ' oninput="sugerirProducto(this.value)" onkeydown="if(event.key===\'Enter\')addCompraCampo()">'+
+     '<button class="btn btn-1" style="margin:0;width:auto;padding:14px 20px" onclick="addCompraCampo()">+</button></div>'+
+     '<div class="chips" id="sug-prod" style="margin-bottom:6px"></div>';
+  if(falta.length){
+    h+='<p class="etiqueta">Lo pide el menú y no lo tenéis</p><div class="chips">';
+    falta.slice(0,10).forEach(function(x){
+      h+='<button class="chip n" onclick="addCompra(\''+attr(x)+'\',true)">'+esc(x)+'</button>';
+    });
+    if(falta.length>10) h+='<button class="chip mas" onclick="hojaFaltaMenu()">Ver los '+falta.length+' ›</button>';
+    h+='</div>';
+    if(falta.length<=10) h+='<button class="btn btn-plano" style="margin:10px 0 0" onclick="addTodoElMenu()">Añadir los '+falta.length+'</button>';
+  }
+  const fr=frecuentes();
+  if(fr.length){
+    h+='<p class="etiqueta">De siempre</p><div class="chips">';
+    fr.forEach(function(x){ h+='<button class="chip" onclick="addCompra(\''+attr(x)+'\',false)">'+esc(x)+'</button>'; });
+    h+='<button class="chip mas" onclick="hojaTodosProductos()">Ver todo ›</button></div>';
+  } else h+='<button class="btn btn-plano" style="margin:6px 0 0" onclick="hojaTodosProductos()">Ver todos los productos</button>';
+  h+='</div>';
+
+  h+='<h2 class="titulo">Despensa</h2>';
+  DATOS.sitios.forEach(function(s,i){
+    h+='<div class="tarjeta"><div class="cab-lista"><h3 class="sitio">'+esc(s.n)+'</h3>'+
+       '<span class="cuenta">'+s.items.length+'</span></div><div class="chips">';
+    if(!s.items.length) h+='<p class="vacio-msg" style="padding:2px 0">Vacío.</p>';
+    s.items.forEach(function(x){
+      h+='<button class="chip" onclick="hojaItem(\''+attr(x)+'\')">'+esc(x)+'</button>';
+    });
+    h+='</div><input class="campo" id="nev-txt-'+i+'" placeholder="Añadir a '+esc(s.n.toLowerCase())+', separado por comas">'+
+       '<button class="btn btn-plano" style="margin:0" onclick="guardarNevera('+i+')">Añadir</button></div>';
+  });
+
+  const sug=sugerencias();
+  if(sug.length){
+    h+='<h2 class="titulo">Con esto podéis hacer</h2>';
+    sug.slice(0,3).forEach(function(x){
+      let barra='<div class="barra">';
+      for(let i=0;i<x.total&&i<12;i++) barra+='<i class="'+(i<x.tengo?'si':'')+'"></i>';
+      barra+='</div>';
+      h+='<button class="receta" onclick="hojaReceta(\''+x.r.id+'\')"><h3>'+esc(x.r.nombre)+'</h3>'+
+         '<p>'+x.tengo+' de '+x.total+' ingredientes'+(x.faltan.length?' · falta '+esc(x.faltan.join(', ')):' · lo tenéis todo')+'</p>'+barra+'</button>';
+    });
+  }
+  h+='<div style="height:14px"></div>';
+  document.getElementById('v-despensa').innerHTML=h;
+}
+function sugerencias(){
+  return DATOS.recetas.map(function(r){
+    const tengo=r.ingredientes.filter(function(i){return enCasa().some(function(a){return coincide(i,a);});});
+    const faltan=r.ingredientes.filter(function(i){return tengo.indexOf(i)===-1;});
+    return {r:r,tengo:tengo.length,total:r.ingredientes.length,faltan:faltan};
+  }).filter(function(s){return s.total>0&&s.tengo>0;})
+    .sort(function(a,b){return (b.tengo/b.total)-(a.tengo/a.total)||b.tengo-a.tengo;});
+}
+function addNevera(x,idx){
+  const i = (typeof idx==='number')?idx:0;
+  if(enCasa().some(function(a){return a.toLowerCase()===x.toLowerCase();})){ aviso(x+' ya lo tenéis.'); return; }
+  DATOS.sitios[i].items.push(x);
+  pintar(); aviso(x+' a '+DATOS.sitios[i].n.toLowerCase()+'.');
+}
+function moverItem(x,destino){
+  DATOS.sitios.forEach(function(s){ s.items=(s.items||[]).filter(function(i){return i.toLowerCase()!==x.toLowerCase();}); });
+  DATOS.sitios[destino].items.push(x);
+  cerrarHoja(); pintar();
+}
+function gastadoYALaLista(x){
+  puntoDeVuelta(x+' a la lista');
+  const idx=(DATOS.sitios||[]).reduce(function(a,s,i){return (s.items||[]).some(function(y){return norm(y)===norm(x);})?i:a;},-1);
+  if(idx>=0){ DATOS.destinos=DATOS.destinos||{}; DATOS.destinos[norm(x)]=idx; }
+  quitarNevera(x); addCompra(x,false);
+  cerrarHoja(); pintar(); aviso(x+' a la lista de la compra.');
+}
+function hojaItem(x){
+  let h='<h2>'+esc(x)+'</h2><p class="sub">Está en '+esc(sitioDe(x)||'ningún sitio')+'.</p><p class="etiqueta">Moverlo a</p>';
+  DATOS.sitios.forEach(function(s,i){
+    h+='<button class="btn '+(s.n===sitioDe(x)?'btn-2':'btn-plano')+'" onclick="moverItem(\''+attr(x)+'\','+i+')">'+esc(s.n)+'</button>';
+  });
+  h+='<button class="btn btn-1" onclick="gastadoYALaLista(\''+attr(x)+'\')">Se ha gastado, apuntadlo para comprar</button>'+
+     '<button class="btn btn-plano" onclick="quitarNevera(\''+attr(x)+'\');cerrarHoja()">Se ha gastado y no hace falta comprarlo</button>'+
+     '<button class="btn btn-plano" onclick="cerrarHoja()">Cerrar</button>';
+  abrirHoja(h);
+}
+function guardarNevera(idx){
+  const t=document.getElementById('nev-txt-'+idx).value;
+  if(!t.trim()){aviso('Escribe algo primero.');return;}
+  t.split(/[,\n]/).map(function(s){return s.trim();}).filter(Boolean).forEach(function(it){
+    if(!enCasa().some(function(a){return a.toLowerCase()===it.toLowerCase();})) DATOS.sitios[idx].items.push(it);
+  });
+  pintar();
+}
+function quitarNevera(a){
+  DATOS.sitios.forEach(function(s){ s.items=(s.items||[]).filter(function(x){return x.toLowerCase()!==a.toLowerCase();}); });
+  pintar();
+}
+
+/* ---------- RECETAS ---------- */
+function listaFiltrada(){
+  const q=norm(BUSQUEDA);
+  return DATOS.recetas.filter(function(r){
+    if(!q) return true;
+    return norm(r.nombre).indexOf(q)!==-1||r.ingredientes.some(function(i){return norm(i).indexOf(q)!==-1;})||norm(r.principal||'').indexOf(q)!==-1;
+  }).sort(function(a,b){return a.nombre.localeCompare(b.nombre,'es');});
+}
+function marcas(r,breve){
+  let m='';
+  const gs=(r.grupos||[]);
+  if(breve){
+    gs.slice(0,2).forEach(function(g){m+='<span class="marca">'+esc(g)+'</span>';});
+  } else {
+    gs.forEach(function(g){m+='<span class="marca" style="'+estiloGrupo(g)+'">'+esc(g)+'</span>';});
+    m+='<span class="marca">'+esc(r.esfuerzo||'')+'</span>';
+    if(r.url) m+='<span class="marca">Enlace</span>';
+  }
+  return '<div class="marcas">'+m+'</div>';
+}
+function olvidadas(){
+  const enMenu=Object.keys(S().menu).map(function(k){return S().menu[k];});
+  return DATOS.recetas.filter(function(r){return enMenu.indexOf(r.id)===-1;})
+    .sort(function(a,b){return (a.ultimaTs||0)-(b.ultimaTs||0);}).slice(0,3);
+}
+function pintarRecetas(){
+  const lista=listaFiltrada();
+  let h='<input class="buscador" placeholder="Buscar receta o ingrediente" value="'+esc(BUSQUEDA)+'" oninput="BUSQUEDA=this.value;pintarRecetas()">'+
+        '<button class="btn btn-1" onclick="hojaReceta(null)">Nueva receta</button>';
+  if(!BUSQUEDA){
+    const o=olvidadas();
+    if(o.length){
+      h+='<h2 class="titulo">Llevan tiempo sin salir</h2><p class="sub">Para romper la rutina.</p>';
+      o.forEach(function(r){
+        h+='<button class="receta" onclick="hojaReceta(\''+r.id+'\')"><h3>'+esc(r.nombre)+'</h3><p>'+hace(r.ultimaTs)+'</p>'+marcas(r,true)+'</button>';
+      });
+      h+='<h2 class="titulo">Todas</h2><div style="height:6px"></div>';
+    }
+  }
+  if(!lista.length) h+='<p class="vacio-msg">Ninguna receta coincide.</p>';
+  else lista.forEach(function(r){
+    h+='<button class="receta" onclick="hojaReceta(\''+r.id+'\')"><h3>'+esc(r.nombre)+'</h3>'+
+       '<p>'+(r.principal?esc(r.principal)+' · ':'')+(r.veces?'hecha '+r.veces+(r.veces===1?' vez':' veces')+' · '+hace(r.ultimaTs):'sin estrenar')+'</p>'+marcas(r,true)+'</button>';
+  });
+  h+='<div style="height:14px"></div>';
+  document.getElementById('v-recetas').innerHTML=h;
+  const inp=document.querySelector('#v-recetas .buscador');
+  if(inp&&document.activeElement!==inp&&BUSQUEDA){inp.focus();inp.setSelectionRange(BUSQUEDA.length,BUSQUEDA.length);}
+}
+
+/* ---------- plantillas y cierre ---------- */
+function cerrarSemana(){
+  const usadas=Object.keys(DATOS.act.menu).filter(function(k){return DATOS.act.menu[k];});
+  if(!usadas.length){aviso('El menú ya está vacío.');return;}
+  puntoDeVuelta('Semana cerrada');
+  pasarDeSemana();
+  SEMANA_VISTA='act'; pintar();
+  aviso('Semana archivada. Ya estáis en la siguiente.');
+}
+
+/* ---------- ajustes ---------- */
+function filaAjuste(fn,titulo,desc,marca){
+  return '<button class="fila-aj" onclick="'+fn+'"><span><b>'+titulo+(marca?' <i class="solo-aqui">solo en este móvil</i>':'')+'</b><span>'+desc+'</span></span><span class="flecha">›</span></button>';
+}
+function interruptor(titulo,desc,activo,fn,marca){
+  return '<div class="fila-aj" style="align-items:flex-start"><span><b>'+titulo+(marca?' <i class="solo-aqui">solo en este móvil</i>':'')+'</b><span>'+desc+'</span></span>'+
+         '<button class="mini-sens'+(activo?' sel-bien':'')+'" onclick="'+fn+'">'+(activo?'Sí':'No')+'</button></div>';
+}
+function hojaAjustes(){
+  let h='<h2>Ajustes</h2><p class="sub">Ordenados por la pantalla a la que afectan. '+(yo()?'Este móvil es el de '+yo()+'.':'')+'</p>';
+
+  h+='<p class="etiqueta">Hoy</p>'+
+    '<div class="fila-aj" style="display:block"><b>Apuntar lo que como <i class="solo-aqui">solo en este móvil</i></b>'+
+    '<span style="display:block;font-size:12.5px;color:var(--gris);font-weight:600;line-height:1.45;margin:2px 0 10px">Tu diario de comidas y de cómo te sientan. Se guarda solo en este teléfono: ni se sincroniza ni lo ve la otra persona. Apagado, Dieta cuenta el menú planificado.</span>'+
+    '<div class="editor-cab"><b style="font-weight:700">Apuntarlo</b>'+
+    '<button class="mini-sens'+(apunta()?' sel-bien':'')+'" onclick="alternarApunte()">'+(apunta()?'Sí':'No')+'</button></div></div>'+
+    filaAjuste('hojaRapidos()','Comidas de fuera del menú','Las que se ofrecen al apuntar que comisteis otra cosa: bocadillo, menú del día…');
+  if(TIENE_GLOBO) h+=filaAjuste('pedirGlobo()','Globo rojo en el icono','Enseña cuántas comidas quedan por apuntar. Hay que dar permiso una vez.',true);
+
+  h+='<p class="etiqueta">Semana</p>'+
+    interruptor('Ver la semana en cuadrícula','Los siete días y las tres comidas de un vistazo, además del día a día.',LOCAL.rejilla,'alternarOpcion(\'rejilla\')',true);
+
+  h+='<p class="etiqueta">Recetas</p>'+
+    filaAjuste('hojaGrupos()','Grupos de alimentos','Legumbre, pescado, verdura… Son las etiquetas de cada receta y de ellas salen los objetivos.')+
+    filaAjuste('hojaDificultades()','Niveles de dificultad','Rápido, con tiempo, de finde. Como habléis en casa.')+
+    interruptor('Filtrar por dificultad','Añade esos botones al elegir plato para un día.',LOCAL.dificultad,'alternarOpcion(\'dificultad\')',true);
+
+  h+='<p class="etiqueta">Dieta</p>'+
+    filaAjuste('hojaObjetivos()','Objetivos de la semana','Cuántas veces queréis que salga cada cosa, y cuántos ingredientes distintos.');
+
+  h+='<p class="etiqueta">Cocina</p>'+
+    filaAjuste('hojaSitios()','Sitios donde guardáis la comida','Frigorífico, congelador, huerto, despensa. Podéis renombrarlos y añadir más.');
+
+  h+='<p class="etiqueta">Este móvil</p>'+
+    filaAjuste('hojaQuien()','Quién lo usa', yo()? yo()+'. Cámbialo si os intercambiáis el teléfono.' : 'Sin elegir todavía.',true)+
+    filaAjuste('hojaTema()','Color de la app','Seis paletas suaves. Alba puede tener otra distinta.',true);
+
+  h+='<p class="etiqueta">Todo</p>'+
+    filaAjuste('restaurarTodo()','Restaurar los ajustes','Vuelve a los grupos, dificultades y objetivos de partida. No toca recetas ni menús.')+
+    filaAjuste('empezarDeCero()','Empezar de cero','Borra recetas, menús, despensa e historial. Esto no se puede deshacer.');
+  if(!ES_APP) h+=filaAjuste('reiniciar()','Volver al ejemplo de la demo','Recupera los datos de muestra para trastear sin miedo.');
+
+  h+='<button class="btn btn-plano" onclick="cerrarHoja()">Cerrar</button>';
+  abrirHoja(h);
+}
+function alternarApunte(){
+  LOCAL.apuntar=!apunta(); guardarLocal();
+  hojaAjustes(); pintar();
+}
+function alternarOpcion(k){
+  LOCAL[k]=!LOCAL[k]; guardarLocal(); pintar(); hojaAjustes();
+}
+function hojaRapidos(){
+  const l=DATOS.rapidos||rapidosPorDefecto();
+  let h='<h2>Comidas de fuera del menú</h2>'+
+        '<p class="sub">Cuando apuntáis que comisteis otra cosa, estas salen para tocar y listo. Poned las de verdad: el bocadillo del bar, el menú del día…</p>';
+  l.forEach(function(x,i){
+    h+='<div class="editor"><div class="editor-cab">'+
+       '<input class="campo" style="margin:0" value="'+esc(x)+'" onchange="renombrarRapido('+i+',this.value)">'+
+       '<button class="quitar" onclick="borrarRapido('+i+')">Quitar</button></div></div>';
+  });
+  h+='<div class="editor"><input class="campo" id="nr-nombre" placeholder="Por ejemplo: empanada del bar">'+
+     '<button class="btn btn-1" style="margin:0" onclick="crearRapido()">Añadir</button></div>'+
+     '<button class="btn btn-plano" onclick="DATOS.rapidos=rapidosPorDefecto();hojaRapidos();pintar()">Volver a la lista de partida</button>'+
+     '<button class="btn btn-plano" onclick="hojaAjustes()">Volver</button>';
+  abrirHoja(h);
+}
+function renombrarRapido(i,n){
+  n=String(n||'').trim(); if(!n){hojaRapidos();return;}
+  DATOS.rapidos[i]=n; hojaRapidos(); pintar();
+}
+function borrarRapido(i){ DATOS.rapidos.splice(i,1); hojaRapidos(); pintar(); }
+function crearRapido(){
+  const n=document.getElementById('nr-nombre').value.trim();
+  if(!n){aviso('Escribe el nombre.');return;}
+  DATOS.rapidos=DATOS.rapidos||rapidosPorDefecto();
+  DATOS.rapidos.push(n); hojaRapidos(); pintar();
+}
+function hojaSitios(){
+  let h='<h2>Sitios donde guardáis la comida</h2><p class="sub">La app aprende dónde va cada producto y lo guarda ahí solo al marcarlo comprado.</p>';
+  DATOS.sitios.forEach(function(s,i){
+    h+='<div class="editor"><div class="editor-cab">'+
+       '<input class="campo" style="margin:0" value="'+esc(s.n)+'" onchange="renombrarSitio('+i+',this.value)">'+
+       (DATOS.sitios.length>1?'<button class="quitar" onclick="borrarSitio('+i+')">Quitar</button>':'')+
+       '</div><p class="pista" style="margin:0">'+s.items.length+' cosas guardadas</p></div>';
+  });
+  h+='<div class="editor"><input class="campo" id="ns-nombre" placeholder="Otro sitio: bodega, garaje, cesta de fruta…">'+
+     '<button class="btn btn-1" style="margin:0" onclick="crearSitio()">Añadir sitio</button></div>'+
+     '<button class="btn btn-plano" onclick="DATOS.sitios=datosIniciales().sitios;hojaSitios();pintar()">Volver a los cuatro de partida</button>'+
+     '<button class="btn btn-plano" onclick="hojaAjustes()">Volver</button>';
+  abrirHoja(h);
+}
+function crearSitio(){
+  const n=document.getElementById('ns-nombre').value.trim();
+  if(!n){aviso('Ponle nombre.');return;}
+  DATOS.sitios.push({n:n,items:[]});
+  hojaSitios(); pintar();
+}
+function borrarSitio(i){
+  if(DATOS.sitios.length<2){aviso('Deja al menos uno.');return;}
+  puntoDeVuelta('Sitio quitado');
+  const items=DATOS.sitios[i].items||[];
+  DATOS.sitios.splice(i,1);
+  DATOS.sitios[0].items=DATOS.sitios[0].items.concat(items);
+  hojaSitios(); pintar();
+}
+function renombrarSitio(i,n){
+  n=String(n||'').trim(); if(n) DATOS.sitios[i].n=n;
+  hojaSitios(); pintar();
+}
+function hojaGrupos(){
+  let h='<h2>Grupos de alimentos</h2><p class="sub">Etiquetáis cada receta con ellos y así la app sabe cuánta legumbre o cuánto pescado coméis. Al renombrar uno se cambia en todas las recetas.</p>';
+  DATOS.gruposDef.forEach(function(g,i){
+    h+='<div class="editor"><div class="editor-cab">'+
+       '<input class="campo" style="margin:0" value="'+esc(g.n)+'" onchange="renombrarGrupo('+i+',this.value)">'+
+       '<button class="quitar" onclick="borrarGrupo('+i+')">Quitar</button></div><div class="colores">';
+    PALETA.forEach(function(c){
+      h+='<button class="color'+(g.c===c?' sel':'')+'" style="background:var(--'+c+')" onclick="colorearGrupo('+i+',\''+c+'\')" aria-label="'+c+'"></button>';
+    });
+    h+='</div></div>';
+  });
+  h+='<div class="editor"><p class="etiqueta">Nuevo grupo</p><input class="campo" id="ng-nombre" placeholder="Lácteos, fermentados, ultraprocesados…">'+
+     '<button class="btn btn-1" style="margin:0" onclick="crearGrupo()">Añadir</button></div>'+
+     '<button class="btn btn-plano" onclick="DATOS.gruposDef=gruposPorDefecto();hojaGrupos();pintar()">Volver a los grupos de partida</button>'+
+     '<button class="btn btn-plano" onclick="hojaAjustes()">Volver</button>';
+  abrirHoja(h);
+}
+function renombrarGrupo(i,nuevo){
+  nuevo=String(nuevo||'').trim(); if(!nuevo){hojaGrupos();return;}
+  const viejo=DATOS.gruposDef[i].n; if(viejo===nuevo) return;
+  DATOS.gruposDef[i].n=nuevo;
+  DATOS.recetas.forEach(function(r){r.grupos=(r.grupos||[]).map(function(g){return g===viejo?nuevo:g;});});
+  objsTodos().forEach(function(o){o.grupos=o.grupos.map(function(g){return g===viejo?nuevo:g;});});
+  guardarLocal();
+  hojaGrupos(); pintar();
+}
+function colorearGrupo(i,c){DATOS.gruposDef[i].c=c;hojaGrupos();pintar();}
+function borrarGrupo(i){
+  const n=DATOS.gruposDef[i].n; DATOS.gruposDef.splice(i,1);
+  DATOS.recetas.forEach(function(r){r.grupos=(r.grupos||[]).filter(function(g){return g!==n;});});
+  objsTodos().forEach(function(o){o.grupos=o.grupos.filter(function(g){return g!==n;});});
+  DATOS.objetivos=DATOS.objetivos.filter(function(o){return o.grupos.length;});
+  LOCAL.objetivos=objsMios().filter(function(o){return o.grupos.length;});
+  guardarLocal();
+  hojaGrupos(); pintar(); aviso('Grupo quitado de todas las recetas.');
+}
+function crearGrupo(){
+  const n=document.getElementById('ng-nombre').value.trim();
+  if(!n){aviso('Ponle nombre.');return;}
+  if(grupoDef(n)){aviso('Ya existe.');return;}
+  DATOS.gruposDef.push({n:n,c:PALETA[DATOS.gruposDef.length%PALETA.length]});
+  hojaGrupos(); pintar();
+}
+function hojaDificultades(){
+  let h='<h2>Niveles de dificultad</h2><p class="sub">Sirven para encontrar plato según el tiempo que tengáis. Renombradlos como habléis en casa.</p>';
+  DATOS.dificultades.forEach(function(d,i){
+    h+='<div class="editor"><div class="editor-cab">'+
+       '<input class="campo" style="margin:0" value="'+esc(d)+'" onchange="renombrarDif('+i+',this.value)">'+
+       '<button class="quitar" onclick="borrarDif('+i+')">Quitar</button></div></div>';
+  });
+  h+='<div class="editor"><p class="etiqueta">Nuevo nivel</p><input class="campo" id="nd-nombre" placeholder="Por ejemplo: de diez minutos, para invitados">'+
+     '<button class="btn btn-1" style="margin:0" onclick="crearDif()">Añadir</button></div>'+
+     '<button class="btn btn-plano" onclick="DATOS.dificultades=dificultadesPorDefecto();hojaDificultades();pintar()">Volver a los tres de partida</button>'+
+     '<button class="btn btn-plano" onclick="hojaAjustes()">Volver</button>';
+  abrirHoja(h);
+}
+function renombrarDif(i,nuevo){
+  nuevo=String(nuevo||'').trim(); if(!nuevo){hojaDificultades();return;}
+  const viejo=DATOS.dificultades[i]; DATOS.dificultades[i]=nuevo;
+  DATOS.recetas.forEach(function(r){if(r.esfuerzo===viejo) r.esfuerzo=nuevo;});
+  hojaDificultades(); pintar();
+}
+function borrarDif(i){
+  if(DATOS.dificultades.length<2){aviso('Deja al menos uno.');return;}
+  const viejo=DATOS.dificultades.splice(i,1)[0];
+  DATOS.recetas.forEach(function(r){if(r.esfuerzo===viejo) r.esfuerzo=DATOS.dificultades[0];});
+  hojaDificultades(); pintar();
+}
+function crearDif(){
+  const n=document.getElementById('nd-nombre').value.trim();
+  if(!n){aviso('Ponle nombre.');return;}
+  DATOS.dificultades.push(n); hojaDificultades(); pintar();
+}
+function restaurarTodo(){
+  DATOS.gruposDef=gruposPorDefecto(); DATOS.dificultades=dificultadesPorDefecto();
+  DATOS.objetivos=objetivosPorDefecto(); DATOS.variedad=30;
+  cerrarHoja(); pintar(); aviso('Ajustes restaurados. Vuestras recetas y menús siguen igual.');
+}
+function empezarDeCero(){
+  puntoDeVuelta('Vaciado todo');
+  const d=datosIniciales();
+  d.recetas=[]; d.act=semanaVacia(); d.prox=semanaVacia(); d.historial=[]; d.plantillas=[]; d.sensaciones=[];
+  d.sitios=[{n:'Frigorífico',items:[]},{n:'Congelador',items:[]},{n:'Huerto',items:[]},{n:'Despensa',items:[]}];
+  DATOS=d; cerrarHoja(); verVista('hoy'); aviso('Listo, todo vacío para empezar.');
+}
+function reiniciar(){
+  DATOS=datosIniciales(); BUSQUEDA=''; MOVIENDO=null; VER_PASADOS=false; COMPACTA=false; FILTRO_ESF='';
+  cerrarHoja(); pintar(); aviso('Datos de ejemplo recuperados.');
+}
+function hojaSemanaVieja(i){
+  const x=DATOS.historial[i]; if(!x) return;
+  let h='<h2>'+esc(x.nombre)+'</h2><p class="sub">'+x.cumplidos+' de '+(DATOS.objetivos||[]).length+' objetivos comunes · '+x.variedad+' ingredientes distintos</p>';
+  Object.keys(x.plan).forEach(function(n){
+    const o=objsTodos().filter(function(y){return y.nombre===n;})[0];
+    const v=x.plan[n];
+    const bien=o?(o.tipo==='min'?v>=o.obj:v<=o.obj):null;
+    h+='<div class="editor"><div class="editor-cab"><b>'+esc(n)+'</b><span class="mini '+(bien===null?'gris':(bien?'verde':''))+'">'+v+(o?(o.tipo==='min'?' de '+o.obj:' / máx '+o.obj):'')+'</span></div></div>';
+  });
+  const p=DATOS.plantillas.filter(function(y){return y.nombre===x.nombre;})[0];
+  if(p){
+    const platos=Object.keys(p.menu).filter(function(k){return p.menu[k];})
+      .map(function(k){const r=receta(p.menu[k]);return r?r.nombre:null;}).filter(Boolean);
+    const unicos=platos.filter(function(v,j,a){return a.indexOf(v)===j;});
+    if(unicos.length) h+='<p class="etiqueta">Qué comisteis</p><p class="sub">'+esc(unicos.join(' · '))+'</p>';
+  }
+  h+='<button class="btn btn-plano" onclick="cerrarHoja()">Cerrar</button>';
+  abrirHoja(h);
+}
+function hojaPorQue(id){
+  const o=objPorId(id); if(!o) return;
+  const v=cuenta(o);
+  const serie=DATOS.historial.slice(-6).map(function(x){return (x.plan&&x.plan[o.nombre])||0;}).concat([v]);
+  const max=Math.max.apply(null,serie.concat([o.obj,1]));
+  let g='<div class="grafica" style="height:90px">';
+  serie.forEach(function(y,i){
+    g+='<div class="col"><span class="vv">'+y+'</span><div class="bb'+(i===serie.length-1?' act':'')+'" style="height:'+Math.max(4,Math.round(y/max*100))+'%"></div></div>';
+  });
+  g+='</div>';
+  abrirHoja('<h2>'+esc(o.nombre)+'</h2>'+
+    '<p class="sub">'+esc(o.guia||'')+'</p>'+g+
+    '<p class="etiqueta" style="margin-top:14px">De dónde sale este número</p>'+
+    '<div class="texto-receta" style="max-height:none">'+esc(o.fuente||'Objetivo puesto por vosotros desde Ajustes.')+'</div>'+
+    '<button class="btn btn-plano" onclick="cerrarHoja()">Cerrar</button>');
+}
+function fichaObjetivo(o,mio){
+  let h='<div class="editor"><div class="editor-cab"><b>'+esc(o.nombre)+'</b>'+
+       '<button class="quitar" onclick="borrarObjetivo(\''+o.id+'\')">Quitar</button></div><div class="marcas" style="margin:0 0 10px">';
+    o.grupos.forEach(function(g){h+='<span class="marca" style="'+estiloGrupo(g)+'">'+esc(g)+'</span>';});
+    h+='</div><div class="par" style="align-items:center">'+
+       '<button class="btn '+(o.tipo==='min'?'btn-2':'btn-plano')+'" style="margin:0" onclick="tipoObjetivo(\''+o.id+'\',\'min\')">Mínimo</button>'+
+       '<button class="btn '+(o.tipo==='max'?'btn-2':'btn-plano')+'" style="margin:0" onclick="tipoObjetivo(\''+o.id+'\',\'max\')">Máximo</button></div>'+
+       '<div class="paso" style="margin-top:10px"><button onclick="sumarObjetivo(\''+o.id+'\',-1)">−</button><b>'+o.obj+'</b>'+
+       '<button onclick="sumarObjetivo(\''+o.id+'\',1)">+</button><span class="pista" style="margin:0 0 0 10px">veces por semana</span></div>'+
+       '<button class="btn btn-plano" style="margin:10px 0 0;font-size:13px;padding:10px" onclick="cambiarDueno(\''+o.id+'\')">'+
+       (mio?'Pasarlo a los dos':'Hacerlo solo mío')+'</button></div>';
+  return h;
+}
+function hojaObjetivos(){
+  let h='<h2>Objetivos de la semana</h2>'+
+    '<p class="sub">Cuántas veces por semana queréis que salga cada cosa, contando comidas y cenas.</p>'+
+    '<p class="etiqueta">De los dos</p>';
+  if(!DATOS.objetivos.length) h+='<p class="vacio-msg" style="padding:2px 0 10px">Ninguno común.</p>';
+  DATOS.objetivos.forEach(function(o){ h+=fichaObjetivo(o,false); });
+  h+='<p class="etiqueta">Solo míos <i class="solo-aqui">no los ve nadie más</i></p>';
+  if(!objsMios().length) h+='<p class="vacio-msg" style="padding:2px 0 10px">Ninguno propio. Podéis tener objetivos distintos sin que el otro sepa cuáles.</p>';
+  objsMios().forEach(function(o){ h+=fichaObjetivo(o,true); });
+  h+='<div class="editor"><div class="editor-cab"><b>Variedad</b></div>'+
+     '<div class="paso"><button onclick="sumarVariedad(-5)">−</button><b>'+DATOS.variedad+'</b>'+
+     '<button onclick="sumarVariedad(5)">+</button><span class="pista" style="margin:0 0 0 10px">ingredientes</span></div></div>'+
+     '<button class="btn btn-1" onclick="hojaCatalogo()">Añadir de la lista recomendada</button>'+
+     '<button class="btn btn-plano" onclick="hojaNuevoObjetivo()">Crear uno nuevo</button>'+
+     '<button class="btn btn-plano" onclick="DATOS.objetivos=objetivosPorDefecto();DATOS.variedad=30;hojaObjetivos();pintar()">Valores de la AESAN en los comunes</button>'+
+     '<button class="btn btn-plano" onclick="cerrarHoja()">Cerrar</button>';
+  abrirHoja(h);
+}
+function trasEditar(id){ if(esMio(id)) guardarLocal(); hojaObjetivos(); pintar(); }
+function sumarObjetivo(id,d){const o=objPorId(id);if(!o)return;o.obj=Math.max(0,Math.min(14,o.obj+d));trasEditar(id);}
+function tipoObjetivo(id,t){const o=objPorId(id);if(!o)return;o.tipo=t;trasEditar(id);}
+function borrarObjetivo(id){
+  if(esMio(id)){ LOCAL.objetivos=objsMios().filter(function(x){return x.id!==id;}); guardarLocal(); }
+  else DATOS.objetivos=DATOS.objetivos.filter(function(x){return x.id!==id;});
+  hojaObjetivos(); pintar();
+}
+function cambiarDueno(id){
+  const o=objPorId(id); if(!o) return;
+  if(esMio(id)){
+    LOCAL.objetivos=objsMios().filter(function(x){return x.id!==id;});
+    DATOS.objetivos.push(o);
+  } else {
+    DATOS.objetivos=DATOS.objetivos.filter(function(x){return x.id!==id;});
+    LOCAL.objetivos=objsMios().concat([o]);
+  }
+  guardarLocal(); hojaObjetivos(); pintar();
+}
+function sumarVariedad(d){DATOS.variedad=Math.max(5,Math.min(60,DATOS.variedad+d));hojaObjetivos();pintar();}
+function hojaCatalogo(){
+  const puestos=objsTodos().map(function(o){return o.nombre;});
+  const libres=catalogoObjetivos().filter(function(o){return puestos.indexOf(o.nombre)===-1;});
+  let h='<h2>Lista recomendada</h2><p class="sub">Sacados de la AESAN y de EAT-Lancet. Añadid los que os interesen.</p>';
+  if(!libres.length) h+='<p class="vacio-msg">Ya los tenéis todos.</p>';
+  libres.forEach(function(o){
+    h+='<button class="receta" onclick="anadirDelCatalogo(\''+o.id+'\')"><h3>'+esc(o.nombre)+'</h3>'+
+       '<p>'+(o.tipo==='min'?'mínimo ':'máximo ')+o.obj+' por semana · '+esc(o.guia)+'</p></button>';
+  });
+  h+='<button class="btn btn-plano" onclick="hojaObjetivos()">Volver</button>';
+  abrirHoja(h);
+}
+function anadirDelCatalogo(id){
+  const o=catalogoObjetivos().filter(function(x){return x.id===id;})[0];
+  if(!o) return;
+  hojaDueno(JSON.parse(JSON.stringify(o)));
+}
+function hojaDueno(o){
+  abrirHoja('<h2>'+esc(o.nombre)+'</h2><p class="sub">¿Es un objetivo de los dos o solo tuyo?</p>'+
+    '<button class="btn btn-1" onclick="guardarObjetivo(false)">De los dos</button>'+
+    '<button class="btn btn-2" onclick="guardarObjetivo(true)">Solo mío</button>'+
+    '<p class="pista">Si es tuyo se guarda en este móvil y la otra persona solo verá que tienes objetivos propios, no cuáles.</p>');
+  PENDIENTE_OBJ=o;
+}
+let PENDIENTE_OBJ=null;
+function guardarObjetivo(mio){
+  const o=PENDIENTE_OBJ; PENDIENTE_OBJ=null; if(!o) return;
+  o.id=(mio?'m':'c')+Date.now()+Math.floor(Math.random()*99);
+  if(mio){ LOCAL.objetivos=objsMios().concat([o]); guardarLocal(); }
+  else DATOS.objetivos.push(o);
+  cerrarHoja(); hojaObjetivos(); pintar(); aviso(o.nombre+' añadido.');
+}
+function hojaNuevoObjetivo(){
+  let h='<h2>Nuevo objetivo</h2><p class="etiqueta">Nombre</p><input class="campo" id="ob-nombre" placeholder="Cenas de verdura, fermentados…">'+
+        '<p class="etiqueta">Qué cuenta</p><div class="filtros">';
+  DATOS.gruposDef.forEach(function(g){h+='<button class="filtro" data-og="'+esc(g.n)+'" onclick="this.classList.toggle(\'sel\')">'+esc(g.n)+'</button>';});
+  h+='</div><p class="etiqueta">Tipo</p><div class="par" style="margin-bottom:14px">'+
+     '<button class="btn btn-2" data-otipo="min" style="margin:0" onclick="unicoEn(this)">Mínimo</button>'+
+     '<button class="btn btn-plano" data-otipo="max" style="margin:0" onclick="unicoEn(this)">Máximo</button></div>'+
+     '<p class="etiqueta">Veces por semana</p><input class="campo" id="ob-num" inputmode="numeric" value="3">'+
+     '<button class="btn btn-1" onclick="crearObjetivo()">Crear</button>'+
+     '<button class="btn btn-plano" onclick="hojaObjetivos()">Volver</button>';
+  abrirHoja(h);
+}
+function unicoEn(el){
+  Array.prototype.forEach.call(el.parentNode.children,function(b){b.classList.remove('sel');b.classList.remove('btn-2');b.classList.add('btn-plano');});
+  el.classList.add('sel'); el.classList.remove('btn-plano'); el.classList.add('btn-2');
+}
+function crearObjetivo(){
+  const nombre=document.getElementById('ob-nombre').value.trim();
+  const grupos=Array.prototype.map.call(document.querySelectorAll('[data-og].sel'),function(b){return b.getAttribute('data-og');});
+  const tipoEl=document.querySelector('[data-otipo].sel');
+  const num=Math.max(0,Math.min(14,parseInt(document.getElementById('ob-num').value,10)||0));
+  if(!grupos.length){aviso('Elige al menos un grupo.');return;}
+  hojaDueno({id:'o'+Date.now(),nombre:nombre||grupos.join(' y '),grupos:grupos,
+    tipo:tipoEl?tipoEl.getAttribute('data-otipo'):'min',obj:num,guia:'Objetivo puesto por vosotros.'});
+}
+
+/* ---------- hojas de plato y receta ---------- */
+let FOCO_PREVIO=null;
+function abrirHoja(html){
+  const yaAbierta=!!document.querySelector('.hoja');
+  if(!yaAbierta) FOCO_PREVIO=document.activeElement;
+  document.getElementById('capa').innerHTML=
+    '<div class="fondo-modal" onclick="if(event.target===this)cerrarHoja()">'+
+    '<div class="hoja" role="dialog" aria-modal="true" tabindex="-1"><div class="asa" aria-hidden="true"></div>'+html+'</div></div>';
+  document.body.style.overflow='hidden';
+  const hoja=document.querySelector('.hoja');
+  if(hoja){ hoja.focus(); hoja.scrollTop=0; }
+}
+function cerrarHoja(){
+  document.getElementById('capa').innerHTML='';
+  document.body.style.overflow='';
+  if(FOCO_PREVIO && FOCO_PREVIO.focus){ try{ FOCO_PREVIO.focus(); }catch(e){} }
+  FOCO_PREVIO=null;
+}
+document.addEventListener('keydown', function(e){
+  if(e.key==='Escape' && document.querySelector('.hoja')) cerrarHoja();
+});
+
+function hojaElegir(dia,comida,destino){
+  const ant=anteriorConPlato(dia,comida);
+  const dst=destino||'';
+  let h='<h2>'+(dst==='segundo'?'Segundo plato':(dst.indexOf('aparte:')===0?'Plato para '+dst.split(':')[1]:comida+' del '+dia.toLowerCase()))+'</h2>'+
+        (dst?'<p class="sub">'+comida+' del '+dia.toLowerCase()+'</p>':'');
+  if(ant){
+    const ra=receta(ant.id);
+    h+='<p class="etiqueta">Sobras</p><div class="chips">'+
+       '<button class="chip" onclick="repetirSobras(\''+dia+'\',\''+comida+'\')">'+esc(ra.nombre)+(ant.doble?' · hicisteis doble':'')+'</button></div>';
+  }
+  if(LOCAL.dificultad){
+    h+='<div class="filtros">';
+    [''].concat(DATOS.dificultades).forEach(function(e){
+      h+='<button class="filtro'+(FILTRO_ESF===e?' sel':'')+'" onclick="FILTRO_ESF=\''+e+'\';hojaElegir(\''+dia+'\',\''+comida+'\')">'+(e||'Todas')+'</button>';
+    });
+    h+='</div>';
+  } else FILTRO_ESF='';
+  const conLoQueHay=sugerencias().filter(function(x){return x.total>1 && x.tengo/x.total>=0.75;}).slice(0,3);
+  if(conLoQueHay.length && !FILTRO_ESF){
+    h+='<p class="etiqueta">Con lo que tenéis en casa</p><div class="chips">';
+    conLoQueHay.forEach(function(x){
+      h+='<button class="chip n" onclick="cerrarHoja();ponerEnMenu(\''+dia+'\',\''+comida+'\',\''+x.r.id+'\',\''+dst+'\')">'+esc(x.r.nombre)+
+         (x.faltan.length?' · falta '+esc(x.faltan[0]):'')+'</button>';
+    });
+    h+='</div>';
+  }
+  const lista=DATOS.recetas.filter(function(r){return !FILTRO_ESF||r.esfuerzo===FILTRO_ESF;})
+    .sort(function(a,b){return a.nombre.localeCompare(b.nombre,'es');});
+  h+='<div style="max-height:42vh;overflow-y:auto;margin-bottom:14px">';
+  if(!lista.length) h+='<p class="vacio-msg">Ninguna con ese filtro.</p>';
+  lista.forEach(function(r){
+    h+='<button class="receta" onclick="cerrarHoja();ponerEnMenu(\''+dia+'\',\''+comida+'\',\''+r.id+'\',\''+dst+'\')"><h3>'+esc(r.nombre)+'</h3><p>'+hace(r.ultimaTs)+'</p>'+marcas(r,true)+'</button>';
+  });
+  h+='</div><button class="btn btn-1" onclick="hojaReceta(null,{dia:\''+dia+'\',comida:\''+comida+'\'})">Crear receta nueva</button>'+
+     '<button class="btn btn-plano" onclick="cerrarHoja()">Cerrar</button>';
+  abrirHoja(h);
+}
+function repetirSobras(dia,comida){
+  const ant=anteriorConPlato(dia,comida); if(!ant) return;
+  const k=dia+'|'+comida;
+  S().menu[k]=ant.id; S().sobras[k]=true; S().cocinas[k]='';
+  cerrarHoja(); pintar(); aviso('Marcado como sobras.');
+}
+function quitarPlato(dia,comida){
+  const r=receta(S().menu[dia+'|'+comida]);
+  puntoDeVuelta('Quitado '+(r?r.nombre:'el plato'));
+  ponerEnMenu(dia,comida,'');
+}
+function ponerEnMenu(dia,comida,id,destino){
+  const k=dia+'|'+comida;
+  if(destino==='segundo'){ S().segundo[k]=id; pintar(); const a2=avisoTolerancia(id); if(a2) aviso(a2); return; }
+  if(destino && destino.indexOf('aparte:')===0){
+    S().aparte[k]={p:destino.split(':')[1], id:id};
+    pintar(); aviso('Apuntado el plato aparte.'); return;
+  }
+  S().menu[k]=id; S().sobras[k]=false; delReg(k);
+  if(!id){S().cocinas[k]='';S().fijos[k]=false;S().guarnicion[k]=false;S().doble[k]=false;S().segundo[k]='';S().aparte[k]=null;}
+  pintar();
+  const a=avisoTolerancia(id);
+  if(a) aviso(a);
+}
+function avisoTolerancia(id){
+  if(!id || !apunta()) return '';
+  const c=tolerancia(id); if(!c) return '';
+  const total=(c.bien||0)+(c.regular||0)+(c.mal||0);
+  const flojo=(c.regular||0)+(c.mal||0);
+  if(total>=2 && flojo/total>=0.5){
+    const r=receta(id);
+    return 'Ojo: te sentó regular o mal '+flojo+' de '+total+' veces'+(r?' con '+r.nombre.toLowerCase():'')+'.';
+  }
+  return '';
+}
+function cocineros(){ const y=yo(); return y?[y].concat(PERSONAS.filter(function(p){return p!==y;})):PERSONAS.slice(); }
+function ponerCocinero(dia,comida,quien){S().cocinas[dia+'|'+comida]=quien;hojaPlato(dia,comida,S().menu[dia+'|'+comida]);pintar();}
+function alternar(campo,dia,comida,msg){
+  const k=dia+'|'+comida;
+  S()[campo][k]=!S()[campo][k];
+  hojaPlato(dia,comida,S().menu[k]); pintar();
+  if(msg&&S()[campo][k]) aviso(msg);
+}
+function alternarFijo(dia,comida){
+  const k=dia+'|'+comida;
+  S().fijos[k]=!S().fijos[k];
+  hojaPlato(dia,comida,S().menu[k]); pintar();
+  aviso(S().fijos[k]?'Fija todos los '+dia.toLowerCase()+'.':'Ya no está fijada.');
+}
+function hojaPlato(dia,comida,id){
+  const r=receta(id); if(!r) return;
+  const k=dia+'|'+comida;
+  const quien=S().cocinas[k]||'';
+  let sel='<p class="etiqueta">Quién cocina</p><div class="par" style="margin-bottom:16px">';
+  cocineros().concat(['Nadie']).forEach(function(n){
+    const v=(n==='Nadie')?'':n;
+    sel+='<button class="btn '+(quien===v?'btn-2':'btn-plano')+'" style="margin:0" onclick="ponerCocinero(\''+dia+'\',\''+comida+'\',\''+v+'\')">'+n+'</button>';
+  });
+  sel+='</div>';
+  abrirHoja(
+    '<h2>'+esc(r.nombre)+'</h2>'+
+    '<p class="sub">'+comida+' del '+dia.toLowerCase()+(S().sobras[k]?' · sobras':'')+(S().fijos[k]?' · fija':'')+'</p>'+
+    marcas(r)+lineaTolerancia(r.id)+'<div style="height:16px"></div>'+sel+
+    '<div class="par" style="margin-bottom:14px">'+
+    '<button class="btn '+(S().guarnicion[k]?'btn-2':'btn-plano')+'" style="margin:0" onclick="alternar(\'guarnicion\',\''+dia+'\',\''+comida+'\',\'Cuenta para el objetivo de verdura.\')">Con verdura</button>'+
+    '<button class="btn '+(S().doble[k]?'btn-2':'btn-plano')+'" style="margin:0" onclick="alternar(\'doble\',\''+dia+'\',\''+comida+'\',\'Te ofrezco las sobras en el siguiente hueco.\')">Cocinar de más</button></div>'+
+    (r.texto?'<div class="texto-receta">'+esc(r.texto)+'</div>':'')+
+    '<button class="btn btn-1" onclick="modoCocina(\''+r.id+'\')">Modo cocina</button>'+
+    (r.url?'<button class="btn btn-plano" onclick="abrirEnlace(\''+attr(r.url)+'\')">Abrir la receta</button>':'')+
+    '<button class="btn btn-4" onclick="alternarFijo(\''+dia+'\',\''+comida+'\')">'+(S().fijos[k]?'Dejar de repetir cada semana':'Fijar todos los '+dia.toLowerCase())+'</button>'+
+    (function(){
+      const s2=receta(S().segundo&&S().segundo[k]);
+      const ap=S().aparte&&S().aparte[k];
+      const ra=ap?receta(ap.id):null;
+      return '<p class="etiqueta">Además</p>'+
+        '<button class="btn btn-plano" onclick="cerrarHoja();hojaElegir(\''+dia+'\',\''+comida+'\',\'segundo\')">'+
+        (s2?'Segundo: '+esc(s2.nombre)+' · cambiar':'Añadir un segundo plato')+'</button>'+
+        (s2?'<button class="btn btn-plano" onclick="quitarSegundo(\''+dia+'\',\''+comida+'\')">Quitar el segundo</button>':'')+
+        '<button class="btn btn-plano" onclick="hojaAparte(\''+dia+'\',\''+comida+'\')">'+
+        (ap&&ra?esc(ap.p)+' come '+esc(ra.nombre)+' · cambiar':'Alguien come otro plato')+'</button>'+
+        (ap&&ra?'<button class="btn btn-plano" onclick="quitarAparte(\''+dia+'\',\''+comida+'\')">Quitar el plato aparte</button>':'');
+    })()+
+    '<div class="par"><button class="btn btn-3" onclick="cerrarHoja();MOVIENDO={dia:\''+dia+'\',comida:\''+comida+'\'};pintar()">Mover</button>'+
+    '<button class="btn btn-plano" onclick="cerrarHoja();hojaElegir(\''+dia+'\',\''+comida+'\')">Cambiar</button></div>'+
+    '<button class="btn btn-peligro" onclick="cerrarHoja();quitarPlato(\''+dia+'\',\''+comida+'\')">Quitar del menú</button>'
+  );
+}
+function hojaAparte(dia,comida){
+  const k=dia+'|'+comida;
+  let h='<h2>Otro plato</h2><p class="sub">Para cuando uno de los dos come algo distinto ese día.</p>';
+  cocineros().forEach(function(p){
+    h+='<button class="btn btn-plano" onclick="cerrarHoja();hojaElegir(\''+dia+'\',\''+comida+'\',\'aparte:'+p+'\')">Elegir plato para '+p+'</button>';
+  });
+  h+='<button class="btn btn-plano" onclick="hojaPlato(\''+dia+'\',\''+comida+'\',S().menu[\''+k+'\'])">Volver</button>';
+  abrirHoja(h);
+}
+function quitarSegundo(dia,comida){
+  const k=dia+'|'+comida; S().segundo[k]=''; cerrarHoja(); pintar(); aviso('Segundo quitado.');
+}
+function quitarAparte(dia,comida){
+  const k=dia+'|'+comida; S().aparte[k]=null; cerrarHoja(); pintar(); aviso('Plato aparte quitado.');
+}
+function modoCocina(id){
+  const r=receta(id); if(!r) return;
+  try{ if(navigator.wakeLock&&navigator.wakeLock.request) navigator.wakeLock.request('screen').catch(function(){}); }catch(e){}
+  abrirHoja('<h2 style="font-size:34px">'+esc(r.nombre)+'</h2>'+
+    (r.ingredientes.length?'<p class="etiqueta" style="font-size:16px">Ingredientes</p><p style="font-size:19px;line-height:1.6;margin:0 0 18px">'+esc(r.ingredientes.join(' · '))+'</p>':'')+
+    (r.texto?'<p class="etiqueta" style="font-size:16px">Paso a paso</p><div style="font-size:21px;line-height:1.7;white-space:pre-wrap;margin-bottom:18px">'+esc(r.texto)+'</div>':
+             '<p class="vacio-msg">Esta receta no tiene los pasos guardados.</p>')+
+    (r.url?'<button class="btn btn-1" onclick="abrirEnlace(\''+attr(r.url)+'\')">Abrir la receta completa</button>':'')+
+    '<p class="sub">La pantalla intentará no apagarse mientras esta ventana esté abierta.</p>'+
+    '<button class="btn btn-plano" onclick="cerrarHoja()">Salir del modo cocina</button>');
+}
+function lineaTolerancia(id){
+  const t=apunta()?tolerancia(id):null;
+  if(!t) return '';
+  return '<p class="pista" style="margin:8px 0 0">A ti: '+t.bien+' bien · '+t.regular+' regular · '+t.mal+' mal</p>';
+}
+function abrirEnlace(u){window.open(u,'_blank');}
+
+function hojaReceta(id,destino){
+  const r=id?receta(id):null;
+  const suyos=r?(r.grupos||[]):[];
+  let gr='<p class="etiqueta">Grupos</p><p class="pista">Marca todos los que lleve.</p><div class="filtros">';
+  DATOS.gruposDef.forEach(function(g){
+    gr+='<button class="filtro'+(suyos.indexOf(g.n)!==-1?' sel':'')+'" data-rg="'+esc(g.n)+'" onclick="this.classList.toggle(\'sel\')">'+esc(g.n)+'</button>';
+  });
+  gr+='</div><p class="etiqueta">Dificultad</p><div class="filtros">';
+  DATOS.dificultades.forEach(function(e){
+    gr+='<button class="filtro'+((r?r.esfuerzo:DATOS.dificultades[0])===e?' sel':'')+'" data-re="'+esc(e)+'" onclick="soloUno(this)">'+esc(e)+'</button>';
+  });
+  gr+='</div>';
+  abrirHoja(
+    '<h2>'+(r?'Editar receta':'Nueva receta')+'</h2>'+(r?lineaTolerancia(r.id):'')+
+    '<input class="campo" id="rec-nombre" placeholder="Nombre del plato" value="'+(r?esc(r.nombre):'')+'">'+
+    '<input class="campo" id="rec-principal" placeholder="Ingrediente protagonista (opcional)" value="'+(r&&r.principal?esc(r.principal):'')+'">'+
+    gr+
+    '<input class="campo" id="rec-url" placeholder="Enlace, opcional" value="'+(r&&r.url?esc(r.url):'')+'">'+
+    '<textarea class="campo" id="rec-ing" placeholder="Ingredientes separados por comas, opcional">'+(r?esc(r.ingredientes.join(', ')):'')+'</textarea>'+
+    '<textarea class="campo" id="rec-texto" placeholder="Receta entera, opcional">'+(r&&r.texto?esc(r.texto):'')+'</textarea>'+
+    '<button class="btn btn-1" onclick="guardarRecetaUI(\''+(id||'')+'\','+(destino?JSON.stringify(destino).replace(/"/g,'&quot;'):'null')+')">Guardar</button>'+
+    (r?'<button class="btn btn-peligro" onclick="cerrarHoja();borrarReceta(\''+r.id+'\')">Borrar receta</button>':'')+
+    '<button class="btn btn-plano" onclick="cerrarHoja()">Cancelar</button>'
+  );
+  setTimeout(function(){const n=document.getElementById('rec-nombre'); if(n&&!r) n.focus();},60);
+}
+function soloUno(el){
+  Array.prototype.forEach.call(el.parentNode.children,function(b){b.classList.remove('sel');});
+  el.classList.add('sel');
+}
+function guardarRecetaUI(id,destino){
+  const nombre=document.getElementById('rec-nombre').value.trim();
+  if(!nombre){aviso('Solo el nombre es obligatorio, pero ese sí.');return;}
+  const grupos=Array.prototype.map.call(document.querySelectorAll('[data-rg].sel'),function(b){return b.getAttribute('data-rg');});
+  const esfEl=document.querySelector('[data-re].sel');
+  const vals={
+    nombre:nombre,
+    ingredientes:document.getElementById('rec-ing').value.split(/[,\n]/).map(function(s){return s.trim();}).filter(Boolean),
+    principal:document.getElementById('rec-principal').value.trim(),
+    grupos:grupos,
+    esfuerzo:esfEl?esfEl.getAttribute('data-re'):DATOS.dificultades[0],
+    url:document.getElementById('rec-url').value.trim(),
+    texto:document.getElementById('rec-texto').value.trim()
+  };
+  cerrarHoja();
+  let r=id?receta(id):null;
+  if(r) Object.assign(r,vals);
+  else {r=Object.assign({id:'r'+Date.now(),veces:0,ultimaTs:0},vals); DATOS.recetas.push(r);}
+  if(destino){S().menu[destino.dia+'|'+destino.comida]=r.id;S().sobras[destino.dia+'|'+destino.comida]=false;}
+  pintar();
+}
+function borrarReceta(id){
+  const rr=receta(id); puntoDeVuelta('Borrada '+(rr?rr.nombre:'la receta'));
+  DATOS.recetas=DATOS.recetas.filter(function(r){return r.id!==id;});
+  Object.keys(S().menu).forEach(function(k){
+    if(S().menu[k]===id){S().menu[k]='';S().cocinas[k]='';S().fijos[k]=false;S().sobras[k]=false;S().guarnicion[k]=false;S().doble[k]=false;delReg(k);}
+  });
+  pintar();
+}
+
+cargarLocal();
+cargarGuardado();
+comprobarSemana();
+pintar();
+bajar(true);
+if(!LOCAL.quien) hojaQuien(true);
+setInterval(function(){ if(!document.hidden) bajar(); }, 20000);
+document.addEventListener('visibilitychange', function(){ if(!document.hidden) bajar(); else actualizarGlobo(); });
+window.addEventListener('online', function(){ bajar(); subir(); });
+if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(function(){});
+</script>
+</body>
+</html>
