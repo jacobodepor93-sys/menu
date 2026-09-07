@@ -197,6 +197,9 @@
   .pie-hoja { position: sticky; bottom: 0; z-index: 2; background: var(--fondo); margin: 8px -20px 0; padding: 10px 20px calc(6px + env(safe-area-inset-bottom)); box-shadow: 0 -12px 16px -12px var(--sombra); }
   .pie-hoja .btn { margin-bottom: 8px; }
   .pie-hoja .btn:last-child { margin-bottom: 0; }
+  .hoja { position: relative; }
+  .cerrar-x { position: absolute; top: 12px; right: 14px; width: 36px; height: 36px; min-height: 36px; border-radius: 50%; background: var(--suave); color: var(--gris); font-size: 15px; font-weight: 800; line-height: 1; z-index: 3; }
+  .hoja h2 { padding-right: 46px; }
   .asa { width: 40px; height: 4px; border-radius: 2px; background: var(--borde); margin: 6px auto 14px; }
   .hoja h2 { font-family: 'Caveat', cursive; font-weight: 700; font-size: 26px; margin: 0 0 8px; }
   .texto-receta { -webkit-user-select: text; user-select: text; background: var(--tarjeta); border-radius: 18px; padding: 16px; font-size: 15px; white-space: pre-wrap; max-height: 30vh; overflow-y: auto; margin-bottom: 14px; }
@@ -220,7 +223,6 @@
 </header>
 
 <main>
-  <section id="v-hoy"></section>
   <section id="v-semana" class="oculto"></section>
   <section id="v-recetas" class="oculto"></section>
   <section id="v-dieta" class="oculto"></section>
@@ -228,8 +230,7 @@
 </main>
 
 <nav>
-  <button id="t-hoy" class="activa" onclick="verVista('hoy')" aria-label="Hoy"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span>Hoy</span></button>
-  <button id="t-semana" onclick="verVista('semana')" aria-label="Semana"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M8 3v4M16 3v4M3 11h18"/></svg><span>Semana</span></button>
+  <button id="t-semana" class="activa" onclick="verVista('semana')" aria-label="Semana"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M8 3v4M16 3v4M3 11h18"/></svg><span>Semana</span></button>
   <button id="t-recetas" onclick="verVista('recetas')" aria-label="Recetas"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h11a3 3 0 013 3v13H8a3 3 0 01-3-3z"/><path d="M9 9h7M9 13h5"/></svg><span>Recetas</span></button>
   <button id="t-dieta" onclick="verVista('dieta')" aria-label="Dieta"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V10M10 19V5M16 19v-6M22 19H2"/></svg><span>Dieta</span></button>
   <button id="t-despensa" onclick="verVista('despensa')" aria-label="Cocina"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16v16H4z"/><path d="M4 12h16M10 8v0M10 16v0"/></svg><span>Cocina</span></button>
@@ -378,7 +379,7 @@ function datosIniciales() {
 
 let DATOS = datosIniciales();
 let SEMANA_VISTA='act';
-let VISTA='hoy', MOVIENDO=null, BUSQUEDA='', VER_PASADOS=false, COMPACTA=false, FILTRO_ESF='';
+let VISTA='semana', MOVIENDO=null, BUSQUEDA='', VER_PASADOS=false, COMPACTA=false, FILTRO_ESF='';
 
 
 let UNDO=null;
@@ -401,13 +402,13 @@ function deshacer(){
 }
 let GUARDANDO=null;
 /* === Sincronización con Google ===
-   La dirección y la clave NO van en este archivo: se piden al instalar la app
-   y se guardan solo en el móvil. Así el código puede ser público sin riesgo. */
+   La dirección y la clave NO están en este archivo: se piden al instalar la app
+   y se guardan solo en el móvil. Por eso el repositorio puede ser público. */
 function API(){ return (LOCAL && LOCAL.api) || ''; }
 function TOKEN(){ return (LOCAL && LOCAL.token) || ''; }
 function haySync(){ return API().indexOf('http')===0 && TOKEN().length>0; }
 
-let REV = 0, SUBIENDO = false, PENDIENTE = false, ULTIMO_ERROR = 0;
+let REV = 0, SUBIENDO = false, PENDIENTE = false;
 
 function guardar(){
   if(GUARDANDO) return;
@@ -420,7 +421,7 @@ function guardar(){
 function cargarGuardado(){
   try{ const x=localStorage.getItem('menu-datos'); if(!x) return false;
     const c=JSON.parse(x);
-    const d=c&&c.datos?c.datos:c;
+    const d=(c&&c.datos)?c.datos:c;
     if(!d||!d.act||!d.recetas) return false;
     REV=(c&&c.rev)||0; DATOS=d; migrar(); return true;
   }catch(e){ return false; }
@@ -441,7 +442,7 @@ function bajar(silencioso){
   fetch(API()+'?token='+encodeURIComponent(TOKEN())+'&t='+Date.now())
     .then(function(r){return r.json();})
     .then(function(j){
-      if(!j.ok) { marcarEstado('Revisad la clave'); return; }
+      if(!j.ok){ marcarEstado('Revisad la clave'); return; }
       marcarEstado('');
       if(j.rev>REV && j.datos){
         adoptar(j.datos,j.rev);
@@ -467,9 +468,7 @@ function subir(){
       } else if(j.conflicto){
         adoptar(j.datos,j.rev);
         aviso('El otro móvil había cambiado algo antes. Me quedo con lo suyo.');
-      } else {
-        marcarEstado('Revisad la clave');
-      }
+      } else marcarEstado('Revisad la clave');
       if(PENDIENTE){ PENDIENTE=false; subir(); }
     })
     .catch(function(){
@@ -591,6 +590,16 @@ const ES_APP=true, TIENE_GLOBO=true;
 let LOCAL = { quien:'', tema:'melocoton', dificultad:false, rejilla:true };
 function cargarLocal(){
   try{ const x=JSON.parse(localStorage.getItem('menu-local')||'{}'); Object.keys(x).forEach(function(k){LOCAL[k]=x[k];}); }catch(e){}
+  if(!LOCAL.sensaciones){
+    LOCAL.sensaciones=[
+      {ts:Date.now()-6*DIA_MS,recetaId:'r3',nombre:'Lentejas de la abuela',ing:['Lentejas','chorizo'],s:'mal',sint:['Ardor'],tarde:false},
+      {ts:Date.now()-13*DIA_MS,recetaId:'r3',nombre:'Lentejas de la abuela',ing:['Lentejas','chorizo'],s:'regular',sint:['Hinchazón'],tarde:false},
+      {ts:Date.now()-9*DIA_MS,recetaId:'r10',nombre:'Pasta con pesto',ing:['Pasta','ajo'],s:'mal',sint:['Ardor','Reflujo'],tarde:true},
+      {ts:Date.now()-4*DIA_MS,recetaId:'r6',nombre:'Crema de calabaza',ing:['Calabaza'],s:'bien',sint:[],tarde:false},
+      {ts:Date.now()-11*DIA_MS,recetaId:'r4',nombre:'Merluza a la gallega',ing:['Merluza'],s:'bien',sint:[],tarde:false}
+    ];
+    guardarLocal();
+  }
 }
 function guardarLocal(){
   try{ localStorage.setItem('menu-local', JSON.stringify(LOCAL)); }catch(e){}
@@ -636,7 +645,7 @@ function ponerQuien(p){
 function verVista(v){
   VISTA=v;
   if(v!=='semana') SEMANA_VISTA='act';
-  ['hoy','semana','recetas','dieta','despensa'].forEach(function(x){
+  ['semana','recetas','dieta','despensa'].forEach(function(x){
     document.getElementById('v-'+x).classList.toggle('oculto', x!==v);
     document.getElementById('t-'+x).classList.toggle('activa', x===v);
   });
@@ -726,7 +735,6 @@ function pintar(){
   const cab=cabecera();
   document.getElementById('titulo-p').textContent = cab[0];
   document.getElementById('fecha').textContent = cab[1];
-  if(VISTA==='hoy') pintarHoy();
   if(VISTA==='semana') pintarSemana();
   if(VISTA==='recetas') pintarRecetas();
   if(VISTA==='dieta') pintarDieta();
@@ -755,92 +763,6 @@ function registroActivo(){ return apunta(); }
 
 function pendientesDia(dia){
   return COMIDAS.filter(function(c){ const k=dia+'|'+c; return S().menu[k] && !getReg(k); });
-}
-function sinApuntar(){
-  if(!apunta()) return 0;
-  let n=0;
-  const hasta=indiceHoy();
-  for(let i=0;i<=hasta;i++){
-    const d=DIAS[i];
-    COMIDAS.forEach(function(c){
-      const k=d+'|'+c;
-      if(DATOS.act.menu[k] && !getReg(k)) n++;
-    });
-  }
-  return n;
-}
-function actualizarGlobo(){
-  if(!('setAppBadge' in navigator)) return;
-  const n=sinApuntar();
-  try{ n>0 ? navigator.setAppBadge(n) : navigator.clearAppBadge(); }catch(e){}
-}
-function pedirGlobo(){
-  if(!('Notification' in window)){ aviso('Este iPhone no lo admite. Hace falta iOS 16.4 o más.'); return; }
-  Notification.requestPermission().then(function(p){
-    if(p==='granted'){ actualizarGlobo(); aviso('Listo. El globo enseñará lo que te quede por apuntar.'); }
-    else aviso('Sin permiso no se puede pintar el globo.');
-  });
-}
-function pintarHoy(){
-  const dia=diaHoy();
-  if(!DATOS.recetas.length){
-    document.getElementById('v-hoy').innerHTML=
-      '<div class="tarjeta"><h2>Empezad por aquí</h2>'+
-      '<p class="desc">Esto funciona con vuestras recetas, no con un recetario de fuera. Añadid tres o cuatro de las de siempre y lo demás sale solo.</p>'+
-      '<button class="btn btn-1" onclick="hojaReceta(null)">Añadir la primera receta</button>'+
-      (ES_APP?'':'<button class="btn btn-plano" onclick="DATOS=datosIniciales();pintar();aviso(\'Ejemplo cargado.\')">Ver un ejemplo ya montado</button>')+'</div>';
-    return;
-  }
-  SEMANA_VISTA='act';
-  let h='<div class="tarjeta">';
-  COMIDAS.forEach(function(comida){
-    const k=dia+'|'+comida;
-    const r=receta(S().menu[k]);
-    if(!r){
-      h+='<button class="hueco vacio-hoy" onclick="tocarHueco(\''+dia+'\',\''+comida+'\')">'+
-         '<span class="pastilla">'+comida+'</span>'+
-         '<span class="nombre-plato gris">Poner algo</span>'+
-         '<span class="flecha">+</span></button>';
-      return;
-    }
-    h+='<button class="hueco" onclick="tocarHueco(\''+dia+'\',\''+comida+'\')">'+
-       '<span class="pastilla">'+comida+'</span>'+
-       '<span class="nombre-plato">'+esc(r.nombre)+'</span>'+
-       (S().cocinas[k]?'<span class="avatar'+(S().cocinas[k]===PERSONAS[1]?' b':'')+'">'+S().cocinas[k].charAt(0)+'</span>':'')+
-       '<span class="flecha">›</span></button>';
-    h+=lineasExtra(k);
-    const v=getReg(k);
-    if(v && apunta() && v.q!=='no'){
-      h+='<div class="fila-sensacion"><span class="quien">'+esc(etiquetaComido(k))+'</span>';
-      [['bien','Bien'],['regular','Regular'],['mal','Mal']].forEach(function(x){
-        h+='<button class="mini-sens'+(v.s===x[0]?' sel-'+x[0]:'')+'" onclick="sentarRapido(\''+dia+'\',\''+comida+'\',\''+x[0]+'\')">'+x[1]+'</button>';
-      });
-      h+='</div>';
-    }
-  });
-  h+='</div>';
-
-  if(apunta()){
-    const pend=pendientesDia(dia);
-    if(pend.length) h+='<button class="btn btn-1" onclick="hojaRegistro(\''+dia+'\')">Apuntar qué comí</button>';
-    const iAyer=(indiceHoy()+6)%7;
-    const pAyer=pendientesDia(DIAS[iAyer]);
-    if(pAyer.length && indiceHoy()>0) h+='<button class="btn btn-plano" onclick="hojaRegistro(\''+DIAS[iAyer]+'\')">'+DIAS[iAyer]+' quedó sin apuntar</button>';
-  }
-
-  const resto=DIAS.slice(indiceHoy()+1,indiceHoy()+4);
-  if(resto.length){
-    h+='<div class="tarjeta"><h2>Lo que viene</h2>';
-    resto.forEach(function(d){
-      const c=receta(DATOS.act.menu[d+'|Comida']), ce=receta(DATOS.act.menu[d+'|Cena']);
-      h+='<button class="hueco" onclick="verVista(\'semana\')">'+
-         '<span class="pastilla">'+d.slice(0,3)+'</span>'+
-         '<span class="nombre-plato" style="font-weight:600">'+esc([c?c.nombre:'', ce?ce.nombre:''].filter(Boolean).join(' · ')||'sin plan')+'</span>'+
-         '<span class="flecha">›</span></button>';
-    });
-    h+='</div>';
-  }
-  document.getElementById('v-hoy').innerHTML=h;
 }
 function lineasExtra(k){
   let h='';
@@ -1004,6 +926,43 @@ function regTexto(dia,comida,t){
 }
 
 /* ---------- SEMANA ---------- */
+function filaHoy(dia,comida){
+  if(!apunta()) return '';
+  const k=dia+'|'+comida;
+  if(!S().menu[k]) return '';
+  const v=getReg(k);
+  if(!v || v.q==='no') return '';
+  let h='<div class="fila-sensacion"><span class="quien">'+esc(etiquetaComido(k))+'</span>';
+  [['bien','Bien'],['regular','Regular'],['mal','Mal']].forEach(function(x){
+    h+='<button class="mini-sens'+(v.s===x[0]?' sel-'+x[0]:'')+'" onclick="sentarRapido(\''+dia+'\',\''+comida+'\',\''+x[0]+'\')">'+x[1]+'</button>';
+  });
+  return h+'</div>';
+}
+function sinApuntar(){
+  if(!apunta()) return 0;
+  let n=0;
+  const hasta=indiceHoy();
+  for(let i=0;i<=hasta;i++){
+    const d=DIAS[i];
+    COMIDAS.forEach(function(c){
+      const k=d+'|'+c;
+      if(DATOS.act.menu[k] && !getReg(k)) n++;
+    });
+  }
+  return n;
+}
+function actualizarGlobo(){
+  if(!('setAppBadge' in navigator)) return;
+  const n=sinApuntar();
+  try{ n>0 ? navigator.setAppBadge(n) : navigator.clearAppBadge(); }catch(e){}
+}
+function pedirGlobo(){
+  if(!('Notification' in window)){ aviso('Este iPhone no lo admite. Hace falta iOS 16.4 o más.'); return; }
+  Notification.requestPermission().then(function(p){
+    if(p==='granted'){ actualizarGlobo(); aviso('Listo. El globo enseñará lo que te quede por apuntar.'); }
+    else aviso('Sin permiso no se puede pintar el globo.');
+  });
+}
 function pintarSemana(){
   const iHoy=indiceHoy();
   const prox = SEMANA_VISTA==='prox';
@@ -1026,10 +985,11 @@ function pintarSemana(){
   if(COMPACTA) h+=rejillaSemana();
   else {
     if(!prox && iHoy>0) h+='<button class="btn btn-plano" onclick="VER_PASADOS=!VER_PASADOS;pintar()">'+
-      (VER_PASADOS?'Ocultar los días pasados':'Ver los '+iHoy+' días pasados')+'</button>';
+      (VER_PASADOS?'Ocultar lo que ya pasó':'Ver los '+iHoy+' días anteriores')+'</button>';
     DATOS.dias.forEach(function(dia,i){
       if(!prox && i<iHoy && !VER_PASADOS) return;
-      h+='<div class="tarjeta dia'+(!prox&&i===iHoy?' hoy':'')+'"><span class="cinta">'+dia+'</span>';
+      const esHoy = !prox && i===iHoy;
+      h+='<div class="tarjeta dia'+(esHoy?' hoy':'')+'" id="'+(esHoy?'tarjeta-hoy':'d-'+i)+'"><span class="cinta">'+dia+(esHoy?' · hoy':'')+'</span>';
       DATOS.comidas.forEach(function(comida){
         const k=dia+'|'+comida;
         const r=receta(S().menu[k]);
@@ -1037,14 +997,13 @@ function pintarSemana(){
         h+='<button class="hueco'+(destino?' destino':'')+'" onclick="tocarHueco(\''+dia+'\',\''+comida+'\')">'+
            '<span class="pastilla p-'+comida.toLowerCase()+'">'+comida+'</span>'+
            (r?'<span class="nombre-plato">'+esc(r.nombre)+'</span>'+
-              (S().guarnicion[k]?'<span class="mini verde">+V</span>':'')+
-              (S().doble[k]?'<span class="mini gris">DOBLE</span>':'')+
+
               (S().sobras[k]?'<span class="mini gris">SOBRAS</span>':'')+
               (S().fijos[k]?'<span class="mini">FIJO</span>':'')+
               (S().cocinas[k]?'<span class="avatar'+(S().cocinas[k]===PERSONAS[1]?' b':'')+'">'+S().cocinas[k].charAt(0)+'</span>':'')+
               '<span class="flecha">›</span>'
              :'<span class="nombre-plato vacio">'+(destino?'Poner aquí':'Agregar comida')+'</span>')+
-           '</button>'+(r?lineasExtra(k):'');
+           '</button>'+(r?lineasExtra(k):'')+(!prox&&i===iHoy?filaHoy(dia,comida):'');
       });
       h+='<button class="hueco" style="justify-content:flex-end;color:var(--gris);font-size:13px;font-weight:700" onclick="hojaCopiarDia(\''+dia+'\')">Copiar este día ›</button>';
       h+='</div>';
@@ -1143,12 +1102,9 @@ function platoReal(k){
   return {grupos:v.gr||[],guar:false,hay:true};
 }
 function cuentaCon(o,fn){
-  const mira=o.grupos.some(function(g){return /verdura/i.test(g);});
   return clavesPrincipales().filter(function(k){
     const d=fn(k);
-    if(!d.hay) return false;
-    if(d.grupos.some(function(g){return o.grupos.indexOf(g)!==-1;})) return true;
-    return mira && d.guar;
+    return d.hay && d.grupos.some(function(g){return o.grupos.indexOf(g)!==-1;});
   }).length;
 }
 function cuentaPlan(o,sem){ return cuentaCon(o,function(k){return platoPlan(k,sem);}); }
@@ -2118,7 +2074,8 @@ function abrirHoja(html){
   if(!yaAbierta) FOCO_PREVIO=document.activeElement;
   document.getElementById('capa').innerHTML=
     '<div class="fondo-modal" onclick="if(event.target===this)cerrarHoja()">'+
-    '<div class="hoja" role="dialog" aria-modal="true" tabindex="-1"><div class="asa" aria-hidden="true"></div>'+html+'</div></div>';
+    '<div class="hoja" role="dialog" aria-modal="true" tabindex="-1"><div class="asa" aria-hidden="true"></div>'+
+    '<button class="cerrar-x" onclick="cerrarHoja()" aria-label="Cerrar">✕</button>'+html+'</div></div>';
   document.body.style.overflow='hidden';
   const hoja=document.querySelector('.hoja');
   if(hoja){ hoja.focus(); hoja.scrollTop=0; }
@@ -2141,7 +2098,7 @@ function hojaElegir(dia,comida,destino){
   if(ant){
     const ra=receta(ant.id);
     h+='<p class="etiqueta">Sobras</p><div class="chips">'+
-       '<button class="chip" onclick="repetirSobras(\''+dia+'\',\''+comida+'\')">'+esc(ra.nombre)+(ant.doble?' · hicisteis doble':'')+'</button></div>';
+       '<button class="chip" onclick="repetirSobras(\''+dia+'\',\''+comida+'\')">'+esc(ra.nombre)+'</button></div>';
   }
   if(LOCAL.dificultad){
     h+='<div class="filtros">';
@@ -2183,16 +2140,18 @@ function quitarPlato(dia,comida){
 }
 function ponerEnMenu(dia,comida,id,destino){
   const k=dia+'|'+comida;
-  if(destino==='segundo'){ S().segundo[k]=id; pintar(); const a2=avisoTolerancia(id); if(a2) aviso(a2); return; }
+  const estabaVacio = !S().menu[k];
+  if(destino==='segundo'){ S().segundo[k]=id; pintar(); hojaHueco(dia,comida); return; }
   if(destino && destino.indexOf('aparte:')===0){
     S().aparte[k]={p:destino.split(':')[1], id:id};
-    pintar(); aviso('Apuntado el plato aparte.'); return;
+    pintar(); hojaHueco(dia,comida); return;
   }
   S().menu[k]=id; S().sobras[k]=false; delReg(k);
   if(!id){S().cocinas[k]='';S().fijos[k]=false;S().guarnicion[k]=false;S().doble[k]=false;S().segundo[k]='';S().aparte[k]=null;}
   pintar();
   const a=avisoTolerancia(id);
   if(a) aviso(a);
+  if(id && estabaVacio) hojaHueco(dia,comida,true);
 }
 function avisoTolerancia(id){
   if(!id || !apunta()) return '';
@@ -2207,55 +2166,65 @@ function avisoTolerancia(id){
 }
 function cocineros(){ const y=yo(); return y?[y].concat(PERSONAS.filter(function(p){return p!==y;})):PERSONAS.slice(); }
 function ponerCocinero(dia,comida,quien){S().cocinas[dia+'|'+comida]=quien;hojaPlato(dia,comida,S().menu[dia+'|'+comida]);pintar();}
-function alternar(campo,dia,comida,msg){
-  const k=dia+'|'+comida;
-  S()[campo][k]=!S()[campo][k];
-  hojaPlato(dia,comida,S().menu[k]); pintar();
-  if(msg&&S()[campo][k]) aviso(msg);
-}
-function alternarFijo(dia,comida){
+function alternarFijo(dia,comida,nuevo){
   const k=dia+'|'+comida;
   S().fijos[k]=!S().fijos[k];
-  hojaPlato(dia,comida,S().menu[k]); pintar();
+  hojaHueco(dia,comida,nuevo); pintar();
   aviso(S().fijos[k]?'Fija todos los '+dia.toLowerCase()+'.':'Ya no está fijada.');
 }
 function hojaPlato(dia,comida,id){
+  // La receta: qué es y cómo se hace. Lo del día está en el botón de opciones.
   const r=receta(id); if(!r) return;
   const k=dia+'|'+comida;
-  const quien=S().cocinas[k]||'';
-  let sel='<p class="etiqueta">Quién cocina</p><div class="par" style="margin-bottom:16px">';
-  cocineros().concat(['Nadie']).forEach(function(n){
-    const v=(n==='Nadie')?'':n;
-    sel+='<button class="btn '+(quien===v?'btn-2':'btn-plano')+'" style="margin:0" onclick="ponerCocinero(\''+dia+'\',\''+comida+'\',\''+v+'\')">'+n+'</button>';
-  });
-  sel+='</div>';
   abrirHoja(
     '<h2>'+esc(r.nombre)+'</h2>'+
-    '<p class="sub">'+comida+' del '+dia.toLowerCase()+(S().sobras[k]?' · sobras':'')+(S().fijos[k]?' · fija':'')+'</p>'+
-    marcas(r)+lineaTolerancia(r.id)+'<div style="height:16px"></div>'+sel+
-    '<div class="par" style="margin-bottom:14px">'+
-    '<button class="btn '+(S().guarnicion[k]?'btn-2':'btn-plano')+'" style="margin:0" onclick="alternar(\'guarnicion\',\''+dia+'\',\''+comida+'\',\'Cuenta para el objetivo de verdura.\')">Con verdura</button>'+
-    '<button class="btn '+(S().doble[k]?'btn-2':'btn-plano')+'" style="margin:0" onclick="alternar(\'doble\',\''+dia+'\',\''+comida+'\',\'Te ofrezco las sobras en el siguiente hueco.\')">Cocinar de más</button></div>'+
-    (r.texto?'<div class="texto-receta">'+esc(r.texto)+'</div>':'')+
-    '<button class="btn btn-1" onclick="modoCocina(\''+r.id+'\')">Modo cocina</button>'+
+    '<p class="sub">'+comida+' del '+dia.toLowerCase()+(S().sobras[k]?' · sobras':'')+(S().fijos[k]?' · fija cada semana':'')+'</p>'+
+    marcas(r)+lineaTolerancia(r.id)+
+    (r.ingredientes.length?'<p class="etiqueta">Lleva</p><div class="chips">'+
+      r.ingredientes.map(function(x){return '<span class="chip">'+esc(x)+'</span>';}).join('')+'</div>':'')+
+    (r.texto?'<p class="etiqueta">Cómo se hace</p><div class="texto-receta">'+esc(r.texto)+'</div>':'')+
+    (r.texto?'<button class="btn btn-1" onclick="modoCocina(\''+r.id+'\')">Ver los pasos en grande</button>':'')+
     (r.url?'<button class="btn btn-plano" onclick="abrirEnlace(\''+attr(r.url)+'\')">Abrir la receta</button>':'')+
-    '<button class="btn btn-4" onclick="alternarFijo(\''+dia+'\',\''+comida+'\')">'+(S().fijos[k]?'Dejar de repetir cada semana':'Fijar todos los '+dia.toLowerCase())+'</button>'+
-    (function(){
-      const s2=receta(S().segundo&&S().segundo[k]);
-      const ap=S().aparte&&S().aparte[k];
-      const ra=ap?receta(ap.id):null;
-      return '<p class="etiqueta">Además</p>'+
-        '<button class="btn btn-plano" onclick="cerrarHoja();hojaElegir(\''+dia+'\',\''+comida+'\',\'segundo\')">'+
-        (s2?'Segundo: '+esc(s2.nombre)+' · cambiar':'Añadir un segundo plato')+'</button>'+
-        (s2?'<button class="btn btn-plano" onclick="quitarSegundo(\''+dia+'\',\''+comida+'\')">Quitar el segundo</button>':'')+
-        '<button class="btn btn-plano" onclick="hojaAparte(\''+dia+'\',\''+comida+'\')">'+
-        (ap&&ra?esc(ap.p)+' come '+esc(ra.nombre)+' · cambiar':'Alguien come otro plato')+'</button>'+
-        (ap&&ra?'<button class="btn btn-plano" onclick="quitarAparte(\''+dia+'\',\''+comida+'\')">Quitar el plato aparte</button>':'');
-    })()+
-    '<div class="par"><button class="btn btn-3" onclick="cerrarHoja();MOVIENDO={dia:\''+dia+'\',comida:\''+comida+'\'};pintar()">Mover</button>'+
-    '<button class="btn btn-plano" onclick="cerrarHoja();hojaElegir(\''+dia+'\',\''+comida+'\')">Cambiar</button></div>'+
-    '<button class="btn btn-peligro" onclick="cerrarHoja();quitarPlato(\''+dia+'\',\''+comida+'\')">Quitar del menú</button>'
+    '<button class="btn btn-plano" onclick="cerrarHoja();hojaReceta(\''+r.id+'\')">Editar la receta</button>'+
+    '<div class="pie-hoja"><button class="btn btn-2" onclick="hojaHueco(\''+dia+'\',\''+comida+'\')">Opciones de este día</button></div>'
   );
+}
+function hojaHueco(dia,comida,nuevo){
+  const k=dia+'|'+comida;
+  const r=receta(S().menu[k]); if(!r) return;
+  const quien=S().cocinas[k]||'';
+  const s2=receta(S().segundo&&S().segundo[k]);
+  const ap=S().aparte&&S().aparte[k];
+  const ra=ap?receta(ap.id):null;
+  let h='<h2>'+(nuevo?esc(r.nombre):comida+' del '+dia.toLowerCase())+'</h2>'+
+        '<p class="sub">'+(nuevo?'Puesto en la '+comida.toLowerCase()+' del '+dia.toLowerCase()+'. Si hace falta, remátalo aquí; si no, dale a listo.':esc(r.nombre))+'</p>';
+
+  h+='<p class="etiqueta">Quién cocina</p><p class="pista">Opcional, para saberlo de un vistazo.</p><div class="par" style="margin-bottom:6px">';
+  cocineros().forEach(function(n){
+    h+='<button class="btn '+(quien===n?'btn-2':'btn-plano')+'" style="margin:0" onclick="ponerCocineroHueco(\''+dia+'\',\''+comida+'\',\''+(quien===n?'':n)+'\','+(nuevo?'true':'false')+')">'+n+'</button>';
+  });
+  h+='</div>';
+
+  h+='<p class="etiqueta">Añadir a este día</p>'+
+     '<button class="btn btn-plano" onclick="cerrarHoja();hojaElegir(\''+dia+'\',\''+comida+'\',\'segundo\')">'+
+     (s2?'Segundo plato: '+esc(s2.nombre)+' · cambiar':'Añadir un segundo plato')+'</button>'+
+     (s2?'<button class="btn btn-plano" onclick="quitarSegundo(\''+dia+'\',\''+comida+'\')">Quitar el segundo</button>':'')+
+     '<button class="btn btn-plano" onclick="hojaAparte(\''+dia+'\',\''+comida+'\')">'+
+     (ap&&ra?esc(ap.p)+' come '+esc(ra.nombre)+' · cambiar':'Alguien come otro plato')+'</button>'+
+     (ap&&ra?'<button class="btn btn-plano" onclick="quitarAparte(\''+dia+'\',\''+comida+'\')">Quitar el plato aparte</button>':'');
+
+  h+='<p class="etiqueta">Este plato</p>'+
+     '<button class="btn btn-plano" onclick="alternarFijo(\''+dia+'\',\''+comida+'\','+(nuevo?'true':'false')+')">'+
+     (S().fijos[k]?'Dejar de repetir cada semana':'Repetir todos los '+dia.toLowerCase())+'</button>'+
+     '<div class="par"><button class="btn btn-plano" style="margin:0" onclick="cerrarHoja();MOVIENDO={dia:\''+dia+'\',comida:\''+comida+'\'};pintar()">Mover a otro día</button>'+
+     '<button class="btn btn-plano" style="margin:0" onclick="cerrarHoja();hojaElegir(\''+dia+'\',\''+comida+'\')">Cambiar de plato</button></div>'+
+     '<button class="btn btn-peligro" onclick="cerrarHoja();quitarPlato(\''+dia+'\',\''+comida+'\')">Quitar del menú</button>';
+  if(nuevo) h+='<div class="pie-hoja"><button class="btn btn-1" onclick="cerrarHoja()">Listo</button></div>';
+  abrirHoja(h);
+}
+function ponerCocineroHueco(dia,comida,quien,nuevo){
+  S().cocinas[dia+'|'+comida]=quien;
+  hojaHueco(dia,comida,nuevo); pintar();
 }
 function hojaAparte(dia,comida){
   const k=dia+'|'+comida;
@@ -2267,10 +2236,10 @@ function hojaAparte(dia,comida){
   abrirHoja(h);
 }
 function quitarSegundo(dia,comida){
-  const k=dia+'|'+comida; S().segundo[k]=''; cerrarHoja(); pintar(); aviso('Segundo quitado.');
+  const k=dia+'|'+comida; S().segundo[k]=''; pintar(); hojaHueco(dia,comida); aviso('Segundo quitado.');
 }
 function quitarAparte(dia,comida){
-  const k=dia+'|'+comida; S().aparte[k]=null; cerrarHoja(); pintar(); aviso('Plato aparte quitado.');
+  const k=dia+'|'+comida; S().aparte[k]=null; pintar(); hojaHueco(dia,comida); aviso('Plato aparte quitado.');
 }
 function modoCocina(id){
   const r=receta(id); if(!r) return;

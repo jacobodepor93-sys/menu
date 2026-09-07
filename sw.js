@@ -1,4 +1,4 @@
-const CACHE = 'menu-v30';
+const CACHE = "menu-v41";
 const FICHEROS = ['./', './index.html', './manifest.json', './icono-180.png', './icono-192.png', './icono-512.png'];
 
 self.addEventListener('install', function (e) {
